@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>БыстроЧтение</title>
+  <title>SpeedReading</title>
   <script src="https://unpkg.com/mammoth@1.8.0/mammoth.browser.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
   <script src="https://unpkg.com/rtf.js@3.0.9/dist/RTFJS.bundle.min.js"></script>
@@ -20,27 +20,27 @@
       color: white;
       display: flex;
       flex-direction: column;
-      min-height: 100vh; /* Используем min-height вместо height */
-      overflow: auto; /* Разрешаем прокрутку, если контент не помещается */
+      min-height: 100vh; /* Use min-height instead of height */
+      overflow: auto; /* Allow scrolling if content overflows */
     }
 
     header {
       text-align: center;
       padding: 1rem;
-      font-size: clamp(1rem, 2.5vw, 1.5rem); /* Масштабируемый размер шрифта */
+      font-size: clamp(1rem, 2.5vw, 1.5rem); /* Scalable font size */
       font-weight: bold;
       background: rgba(0, 0, 0, 0.1);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap; /* Перенос кнопок на маленьких экранах */
+      flex-wrap: wrap; /* Wrap buttons on small screens */
     }
 
     main {
       flex: 1;
       display: flex;
       flex-direction: column;
-      padding: clamp(0.5rem, 2vw, 1rem); /* Адаптивные отступы */
+      padding: clamp(0.5rem, 2vw, 1rem); /* Adaptive padding */
       gap: clamp(0.5rem, 1.5vw, 1rem);
       overflow: hidden;
     }
@@ -52,7 +52,7 @@
     }
 
     #fullText {
-      height: 500px; /* Фиксированная высота увеличена для большего размера */
+      height: 500px; /* Increased fixed height for larger size */
       overflow-y: auto;
       padding: clamp(0.5rem, 2vw, 1rem);
       background: rgba(255, 255, 255, 0.08);
@@ -65,7 +65,7 @@
 
     #wordBox {
       text-align: center;
-      font-size: clamp(1.2rem, 5vw, 2rem); /* Масштабируемый размер шрифта */
+      font-size: clamp(1.2rem, 5vw, 2rem); /* Scalable font size */
       font-weight: bold;
       padding: clamp(0.5rem, 3vw, 1.5rem);
       background: rgba(0, 0, 0, 0.1);
@@ -101,7 +101,7 @@
       width: 100%;
       accent-color: #2ed3b7;
       height: 4px;
-      touch-action: pan-y; /* Улучшает прокрутку на сенсорных устройствах */
+      touch-action: pan-y; /* Improves scrolling on touch devices */
     }
 
     #pageIndicator {
@@ -134,8 +134,8 @@
       cursor: pointer;
       transition: transform 0.2s ease;
       font-size: clamp(0.8rem, 2vw, 1rem);
-      margin: 0.2rem; /* Отступы для сенсорных устройств */
-      min-width: 80px; /* Минимальная ширина кнопок */
+      margin: 0.2rem; /* Margins for touch devices */
+      min-width: 80px; /* Minimum button width */
     }
 
     #pauseButton:hover,
@@ -175,7 +175,7 @@
       display: flex;
       align-items: center;
       gap: clamp(0.5rem, 1.5vw, 1rem);
-      flex-wrap: wrap; /* Перенос элементов на маленьких экранах */
+      flex-wrap: wrap; /* Wrap elements on small screens */
     }
 
     #chapterSelect {
@@ -198,9 +198,9 @@
       }
     }
 
-    /* Медиазапросы для адаптивности */
+    /* Media queries for responsiveness */
 
-    /* Мобильные устройства (до 768px) */
+    /* Mobile devices (up to 768px) */
     @media (max-width: 768px) {
       header {
         flex-direction: column;
@@ -215,13 +215,13 @@
       }
 
       #fullText {
-        font-size: 0.9rem; /* Меньший шрифт для лучшей читаемости */
+        font-size: 0.9rem; /* Smaller font for better readability */
         line-height: 1.4;
-        height: 300px; /* Увеличенная фиксированная высота для мобильных */
+        height: 300px; /* Increased fixed height for mobile */
       }
 
       #wordBox {
-        font-size: 1.5rem; /* Уменьшаем шрифт */
+        font-size: 1.5rem; /* Smaller font */
         padding: 0.5rem;
       }
 
@@ -234,7 +234,7 @@
       }
 
       input[type="range"] {
-        height: 6px; /* Увеличиваем для удобства на сенсорных экранах */
+        height: 6px; /* Larger for touch usability */
       }
 
       #pauseButton,
@@ -261,7 +261,7 @@
       }
     }
 
-    /* Планшеты (768px–1024px) */
+    /* Tablets (768px–1024px) */
     @media (min-width: 769px) and (max-width: 1024px) {
       header {
         padding: 0.8rem;
@@ -271,7 +271,7 @@
       #fullText {
         font-size: 0.95rem;
         padding: 0.8rem;
-        height: 400px; /* Увеличенная фиксированная высота для планшетов */
+        height: 400px; /* Increased fixed height for tablets */
       }
 
       #wordBox {
@@ -296,94 +296,94 @@
       }
     }
 
-    /* Десктопы (1024px и выше) */
+    /* Desktops (1024px and above) */
     @media (min-width: 1025px) {
-      /* Оставляем стили как есть, они уже подходят для больших экранов */
+      /* Styles remain as is, suitable for large screens */
     }
   </style>
 </head>
 <body>
   <header>
-    <span>БыстроЧтение</span>
+    <span>SpeedReading</span>
     <div>
-      <button id="rewindBack">Назад 10%</button>
-      <button id="pauseButton">Пауза</button>
-      <button id="restartButton">Перезапустить</button>
-      <button id="rewindForward">Вперед 10%</button>
+      <button id="rewindBack">Back 10%</button>
+      <button id="pauseButton">Pause</button>
+      <button id="restartButton">Restart</button>
+      <button id="rewindForward">Forward 10%</button>
     </div>
   </header>
 
   <main>
     <input type="file" id="fileInput" accept=".txt,.pdf,.docx,.html,.epub,.rtf">
-    <div id="loadingIndicator" style="display: none;">Загрузка...</div>
+    <div id="loadingIndicator" style="display: none;">Loading...</div>
     <div id="navigation">
       <input type="range" id="navigationSlider" min="0" max="100" value="0">
       <select id="chapterSelect" style="display: none;"></select>
     </div>
     <div id="fullText"></div>
     <div id="wordBox"></div>
-    <div id="pageIndicator">Страница 1</div>
+    <div id="pageIndicator">Page 1</div>
     <div id="progress">
       <div id="progressBar" style="width: 0%;"></div>
-      <span id="progressText">Прогресс: 0%</span>
+      <span id="progressText">Progress: 0%</span>
     </div>
     <div class="controls bottom">
-      <label for="speedSlider">Скорость (слов/сек):</label>
+      <label for="speedSlider">Speed (words/sec):</label>
       <input type="range" id="speedSlider" min="0.3" max="15" step="0.1" value="1.5">
-      <label for="accelSlider">Макс. ускорение:</label>
+      <label for="accelSlider">Max Acceleration:</label>
       <input type="range" id="accelSlider" min="0" max="15" step="0.1" value="0">
-      <label><input type="checkbox" id="autoAccel"> Автоускорение</label>
-      <label for="sizeSlider">Размер текста:</label>
+      <label><input type="checkbox" id="autoAccel"> Auto Acceleration</label>
+      <label for="sizeSlider">Text Size:</label>
       <input type="range" id="sizeSlider" min="1" max="4" step="0.1" value="2">
-      <label for="wordCountSlider">Количество слов:</label>
+      <label for="wordCountSlider">Number of Words:</label>
       <input type="range" id="wordCountSlider" min="3" max="15" step="1" value="3">
     </div>
   </main>
 
   <script type="module">
-    // Проверка на запуск через file://
+    // Check if running via file://
     if (window.location.protocol === "file:") {
       alert(
-        "Пожалуйста, запустите приложение через локальный сервер (например, с помощью VS Code Live Server или команды 'python -m http.server 8000'), иначе загрузка файлов может не работать из-за ограничений CORS."
+        "Please run the application through a local server (e.g., using VS Code Live Server or the command 'python -m http.server 8000'), otherwise file loading may not work due to CORS restrictions."
       );
     }
 
-    // Загрузка pdf.js
+    // Load pdf.js
     let pdfjsLib;
     try {
       pdfjsLib = await import("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.min.mjs");
       pdfjsLib.GlobalWorkerOptions.workerSrc =
         "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.worker.min.mjs";
-      console.log("pdf.js успешно загружен");
+      console.log("pdf.js successfully loaded");
     } catch (error) {
-      console.error("Ошибка загрузки pdf.js:", error);
-      alert("Не удалось загрузить библиотеку pdf.js. Проверьте подключение к интернету или попробуйте позже.");
+      console.error("Error loading pdf.js:", error);
+      alert("Failed to load the pdf.js library. Check your internet connection or try again later.");
       throw error;
     }
 
-    // Проверка загрузки библиотек
+    // Check library loading
     if (typeof mammoth === "undefined") {
-      console.error("Библиотека mammoth.js не загружена");
-      alert("Не удалось загрузить библиотеку mammoth.js для обработки .docx. Проверьте подключение к интернету.");
+      console.error("mammoth.js library not loaded");
+      alert("Failed to load the mammoth.js library for processing .docx files. Check your internet connection.");
     } else {
-      console.log("mammoth.js успешно загружен");
+      console.log("mammoth.js successfully loaded");
     }
 
     if (typeof ePub === "undefined") {
-      console.error("Библиотека epub.js не загружена");
-      alert("Не удалось загрузить библиотеку epub.js для обработки .epub. Проверьте подключение к интернету.");
+      console.error("epub.js library not loaded");
+      alert("Failed to load the epub.js library for processing .epub files. Check your internet connection.");
     } else {
-      console.log("epub.js успешно загружен");
+      console.log("epub.js successfully loaded");
     }
 
     if (typeof RTFJS === "undefined") {
-      console.error("Библиотека rtf.js не загружена");
-      alert("Не удалось загрузить библиотеку rtf.js для обработки .rtf. Проверьте подключение к интернету.");
+      console.error("rtf.js library not loaded");
+      alert("Failed to load the rtf.js library for processing .rtf files. Check your internet connection.");
     } else {
-      console.log("rtf.js успешно загружен");
+      console.log("rtf.js successfully loaded");
     }
 
-    // Инициализация переменных
+    // Initialize variables
     let words = [],
       current = 0,
       interval,
@@ -410,38 +410,38 @@
     const bufferThreshold = 500;
     let chapters = [];
 
-    // Обновление отображения текста
+    // Update text display
     function updateDisplay() {
       const blockStart = current * wordCount;
       const blockEnd = blockStart + wordCount;
 
-      // Пополнение буфера слов
+      // Refill word buffer
       if (words.length < bufferThreshold && wordBuffer.length > 0) {
         const batchSize = Math.min(500, wordBuffer.length);
         words = words.concat(wordBuffer.splice(0, batchSize));
-        console.log(`Добавлено ${batchSize} слов из буфера. Текущий размер words: ${words.length}`);
+        console.log(`Added ${batchSize} words from buffer. Current words size: ${words.length}`);
       }
 
-      // Загрузка следующей партии для PDF
+      // Load next batch for PDF
       if (pdfDocument && blockStart >= words.length - wordCount * 5) {
         setTimeout(loadNextBatch, 0);
       }
 
-      // Проверка на конец текста
+      // Check for end of text
       if (blockStart >= words.length) {
         wordBox.innerHTML = "";
         fullTextDiv.innerHTML = words.join(" ");
-        pageIndicator.textContent = "Конец";
-        progressText.textContent = "Прогресс: 100%";
+        pageIndicator.textContent = "End";
+        progressText.textContent = "Progress: 100%";
         progressBar.style.width = "100%";
         navigationSlider.value = 100;
         localStorage.setItem("readProgress", current);
-        pauseButton.textContent = "Закончено";
+        pauseButton.textContent = "Finished";
         pauseButton.disabled = true;
         return;
       }
 
-      // Рендеринг текста
+      // Render text
       const renderStart = Math.max(0, blockStart - renderWindow);
       const renderEnd = Math.min(words.length, blockEnd + renderWindow);
       const highlighted = words
@@ -457,16 +457,16 @@
       const currentWords = words.slice(blockStart, blockEnd).join(" ");
 
       fullTextDiv.innerHTML = highlighted;
-      wordBox.innerHTML = currentWords || "Дальше ничего нет!";
+      wordBox.innerHTML = currentWords || "Nothing more to read!";
       wordBox.classList.add("next");
       setTimeout(() => wordBox.classList.remove("next"), 400);
-      pageIndicator.textContent = `Страница ${Math.floor(blockStart / 200) + 1}`;
+      pageIndicator.textContent = `Page ${Math.floor(blockStart / 200) + 1}`;
       const progressPercent = Math.round((blockStart / words.length) * 100);
-      progressText.textContent = `Прогресс: ${progressPercent}%`;
+      progressText.textContent = `Progress: ${progressPercent}%`;
       progressBar.style.width = `${progressPercent}%`;
       navigationSlider.value = progressPercent;
 
-      // Прокрутка к выделенному тексту
+      // Scroll to highlighted text
       const highlightedSpan = fullTextDiv.querySelector(".highlight");
       if (highlightedSpan) {
         const containerHeight = fullTextDiv.clientHeight;
@@ -480,7 +480,7 @@
       }
     }
 
-    // Запуск чтения
+    // Start reading
     function startReading() {
       if (isPaused) return;
       clearInterval(interval);
@@ -508,25 +508,25 @@
       }, delay);
     }
 
-    // Пауза/возобновление
+    // Pause/resume
     function togglePause() {
       isPaused = !isPaused;
-      pauseButton.textContent = isPaused ? "Продолжить" : "Пауза";
+      pauseButton.textContent = isPaused ? "Continue" : "Pause";
       if (!isPaused) startReading();
       else clearInterval(interval);
     }
 
-    // Перезапуск чтения
+    // Restart reading
     function restartReading() {
       current = 0;
       isPaused = false;
-      pauseButton.textContent = "Пауза";
+      pauseButton.textContent = "Pause";
       pauseButton.disabled = false;
       updateDisplay();
       startReading();
     }
 
-    // Начало чтения с определённого слова
+    // Start reading from a specific word
     function startReadingFromWord(index) {
       if (index >= 0 && index < words.length) {
         current = Math.floor(index / wordCount);
@@ -541,7 +541,7 @@
       }
     }
 
-    // Навигация по проценту прогресса
+    // Navigate to a percentage of progress
     function navigateToPercent(percent) {
       const totalBlocks = Math.floor(words.length / wordCount);
       current = Math.floor(totalBlocks * (percent / 100));
@@ -551,7 +551,7 @@
       if (!isPaused) startReading();
     }
 
-    // Перемотка назад/вперёд
+    // Rewind backward/forward
     function rewind(direction) {
       const totalBlocks = Math.floor(words.length / wordCount);
       const step = Math.floor(totalBlocks * 0.1);
@@ -565,7 +565,7 @@
       if (!isPaused) startReading();
     }
 
-    // Загрузка следующей партии страниц PDF
+    // Load next batch of PDF pages
     async function loadNextBatch() {
       if (!pdfDocument || currentPageBatch * pagesPerBatch >= totalPages) return;
 
@@ -576,18 +576,18 @@
       const endPage = Math.min(startPage + pagesPerBatch - 1, totalPages);
 
       try {
-        console.log(`Загрузка страниц ${startPage}-${endPage} из ${totalPages}`);
+        console.log(`Loading pages ${startPage}-${endPage} of ${totalPages}`);
         for (let i = startPage; i <= endPage; i++) {
-          console.log(`Обработка страницы ${i}`);
+          console.log(`Processing page ${i}`);
           const page = await pdfDocument.getPage(i);
           const content = await page.getTextContent();
           const pageText = content.items.map((item) => item.str).join(" ");
-          console.log(`Текст страницы ${i}: ${pageText.slice(0, 50)}...`);
+          console.log(`Page ${i} text: ${pageText.slice(0, 50)}...`);
           batchText += pageText + " ";
         }
 
         const newWords = batchText.trim().replace(/\s+/g, " ").split(" ");
-        console.log(`Извлечено ${newWords.length} слов`);
+        console.log(`Extracted ${newWords.length} words`);
         if (newWords.length > 0) {
           wordBuffer = wordBuffer.concat(newWords);
           updateDisplay();
@@ -596,27 +596,27 @@
         currentPageBatch++;
         const endTime = performance.now();
         if (currentPageBatch * pagesPerBatch < totalPages) {
-          loadingIndicator.textContent = `Загрузка... (страницы ${startPage}-${endPage} из ${totalPages}, время: ${(endTime - startTime).toFixed(2)} мс)`;
+          loadingIndicator.textContent = `Loading... (pages ${startPage}-${endPage} of ${totalPages}, time: ${(endTime - startTime).toFixed(2)} ms)`;
         } else {
           loadingIndicator.style.display = "none";
         }
       } catch (error) {
-        console.error("Ошибка при загрузке следующей партии страниц:", error);
-        loadingIndicator.textContent = `Ошибка загрузки страниц: ${error.message}`;
+        console.error("Error loading next batch of pages:", error);
+        loadingIndicator.textContent = `Error loading pages: ${error.message}`;
       }
     }
 
-    // Обработка загруженного файла
+    // Handle uploaded file
     async function handleFile(file) {
       if (!file) {
-        alert("Пожалуйста, выберите файл!");
+        alert("Please select a file!");
         return;
       }
 
       const maxSizeMB = 50;
       if (file.size > maxSizeMB * 1024 * 1024) {
         alert(
-          `Файл слишком большой (${(file.size / (1024 * 1024)).toFixed(2)} МБ). Максимальный размер: ${maxSizeMB} МБ.`
+          `File is too large (${(file.size / (1024 * 1024)).toFixed(2)} MB). Maximum size: ${maxSizeMB} MB.`
         );
         return;
       }
@@ -624,7 +624,7 @@
       const ext = file.name.split(".").pop().toLowerCase();
       let text = "";
       pauseButton.disabled = false;
-      pauseButton.textContent = "Пауза";
+      pauseButton.textContent = "Pause";
       restartButton.disabled = false;
       pdfDocument = null;
       currentPageBatch = 0;
@@ -639,60 +639,60 @@
 
       try {
         if (ext === "txt") {
-          console.log("Обработка .txt...");
+          console.log("Processing .txt...");
           text = await file.text();
-          if (!text) throw new Error("Файл .txt пустой или нечитаемый.");
-          console.log(`Извлечённый текст (.txt): ${text.slice(0, 50)}...`);
+          if (!text) throw new Error("The .txt file is empty or unreadable.");
+          console.log(`Extracted text (.txt): ${text.slice(0, 50)}...`);
         } else if (ext === "html") {
-          console.log("Обработка .html...");
+          console.log("Processing .html...");
           const html = await file.text();
           const div = document.createElement("div");
           div.innerHTML = html;
           text = div.innerText;
-          if (!text.trim()) throw new Error("Файл .html не содержит текста.");
-          console.log(`Извлечённый текст (.html): ${text.slice(0, 50)}...`);
+          if (!text.trim()) throw new Error("The .html file contains no text.");
+          console.log(`Extracted text (.html): ${text.slice(0, 50)}...`);
         } else if (ext === "pdf") {
-          console.log("Обработка .pdf...");
-          if (!pdfjsLib) throw new Error("Библиотека pdf.js не загружена.");
+          console.log("Processing .pdf...");
+          if (!pdfjsLib) throw new Error("The pdf.js library is not loaded.");
           const arrayBuffer = await file.arrayBuffer();
-          console.log("Загрузка PDF-документа...");
+          console.log("Loading PDF document...");
           pdfDocument = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
           totalPages = pdfDocument.numPages;
-          console.log(`Общее количество страниц: ${totalPages}`);
-          if (totalPages === 0) throw new Error("PDF-файл пустой.");
+          console.log(`Total pages: ${totalPages}`);
+          if (totalPages === 0) throw new Error("The PDF file is empty.");
 
           let pdfText = "";
           const endPage = Math.min(pagesPerBatch, totalPages);
           loadingIndicator.style.display = "block";
           const startTime = performance.now();
-          loadingIndicator.textContent = `Загрузка... (страницы 1-${endPage} из ${totalPages})`;
+          loadingIndicator.textContent = `Loading... (pages 1-${endPage} of ${totalPages})`;
 
           for (let i = 1; i <= endPage; i++) {
-            console.log(`Обработка страницы ${i}`);
+            console.log(`Processing page ${i}`);
             const page = await pdfDocument.getPage(i);
             const content = await page.getTextContent();
             const pageText = content.items.map((item) => item.str).join(" ");
-            console.log(`Текст страницы ${i}: ${pageText.slice(0, 50)}...`);
+            console.log(`Page ${i} text: ${pageText.slice(0, 50)}...`);
             pdfText += pageText + " ";
           }
           const endTime = performance.now();
-          loadingIndicator.textContent = `Загрузка... (страницы 1-${endPage} из ${totalPages}, время: ${(endTime - startTime).toFixed(2)} мс)`;
+          loadingIndicator.textContent = `Loading... (pages 1-${endPage} of ${totalPages}, time: ${(endTime - startTime).toFixed(2)} ms)`;
           text = pdfText;
           currentPageBatch = 1;
           if (currentPageBatch * pagesPerBatch >= totalPages) {
             loadingIndicator.style.display = "none";
           }
         } else if (ext === "docx") {
-          console.log("Обработка .docx...");
-          if (typeof mammoth === "undefined") throw new Error("Библиотека mammoth.js не загружена.");
+          console.log("Processing .docx...");
+          if (typeof mammoth === "undefined") throw new Error("The mammoth.js library is not loaded.");
           const arrayBuffer = await file.arrayBuffer();
           const result = await mammoth.extractRawText({ arrayBuffer });
           text = result.value;
-          if (!text.trim()) throw new Error("Файл .docx пустой или текст не извлечен.");
-          console.log(`Извлечённый текст (.docx): ${text.slice(0, 50)}...`);
+          if (!text.trim()) throw new Error("The .docx file is empty or text could not be extracted.");
+          console.log(`Extracted text (.docx): ${text.slice(0, 50)}...`);
         } else if (ext === "epub") {
-          console.log("Обработка .epub...");
-          if (typeof ePub === "undefined") throw new Error("Библиотека epub.js не загружена.");
+          console.log("Processing .epub...");
+          if (typeof ePub === "undefined") throw new Error("The epub.js library is not loaded.");
           const arrayBuffer = await file.arrayBuffer();
           const book = ePub(arrayBuffer);
           const contents = await book.opened;
@@ -712,7 +712,7 @@
             chapters.forEach((chapter, idx) => {
               const option = document.createElement("option");
               option.value = idx;
-              option.textContent = chapter.label || `Глава ${idx + 1}`;
+              option.textContent = chapter.label || `Chapter ${idx + 1}`;
               chapterSelect.appendChild(option);
             });
           }
@@ -723,28 +723,28 @@
             epubText += (doc.body.innerText || "") + " ";
           }
           text = epubText;
-          if (!text.trim()) throw new Error("Файл .epub пустой или текст не извлечен.");
-          console.log(`Извлечённый текст (.epub): ${text.slice(0, 50)}...`);
+          if (!text.trim()) throw new Error("The .epub file is empty or text could not be extracted.");
+          console.log(`Extracted text (.epub): ${text.slice(0, 50)}...`);
         } else if (ext === "rtf") {
-          console.log("Обработка .rtf...");
-          if (typeof RTFJS === "undefined") throw new Error("Библиотека rtf.js не загружена.");
+          console.log("Processing .rtf...");
+          if (typeof RTFJS === "undefined") throw new Error("The rtf.js library is not loaded.");
           const arrayBuffer = await file.arrayBuffer();
           const rtfContent = new TextDecoder().decode(arrayBuffer);
           const rtf = new RTFJS.Document(rtfContent);
           text = rtf.getText();
-          if (!text.trim()) throw new Error("Файл .rtf пустой или текст не извлечен.");
-          console.log(`Извлечённый текст (.rtf): ${text.slice(0, 50)}...`);
+          if (!text.trim()) throw new Error("The .rtf file is empty or text could not be extracted.");
+          console.log(`Extracted text (.rtf): ${text.slice(0, 50)}...`);
         } else {
           alert(
-            "Этот формат не поддерживается! Поддерживаемые форматы: .txt, .pdf, .docx, .html, .epub, .rtf."
+            "This format is not supported! Supported formats: .txt, .pdf, .docx, .html, .epub, .rtf."
           );
           return;
         }
 
         words = text.trim().replace(/\s+/g, " ").split(" ");
-        console.log(`Всего слов после обработки: ${words.length}`);
+        console.log(`Total words after processing: ${words.length}`);
         if (words.length === 0) {
-          alert("После обработки файла не найдено слов. Попробуйте другой файл.");
+          alert("No words found after processing the file. Try another file.");
           return;
         }
 
@@ -756,15 +756,15 @@
         updateDisplay();
         startReading();
       } catch (error) {
-        console.error(`Ошибка обработки файла (${ext}):`, error);
+        console.error(`Error processing file (${ext}):`, error);
         alert(
-          `Не удалось загрузить файл (${ext}): ${error.message}. Проверьте консоль браузера (F12) для подробностей.`
+          `Failed to load file (${ext}): ${error.message}. Check the browser console (F12) for details.`
         );
         loadingIndicator.style.display = "none";
       }
     }
 
-    // Обработчики событий
+    // Event listeners
     document.getElementById("fileInput").addEventListener("change", (e) => {
       const file = e.target.files[0];
       handleFile(file);
