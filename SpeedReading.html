@@ -414,43 +414,41 @@
     const blockEnd = blockStart + wordCount;
 
     if (words.length < bufferThreshold && wordBuffer.length > 0) {
-      const batchSize = Math.min(500, wordBuffer.length);
-      words = words.concat(wordBuffer.splice(0, batchSize));
-      console.log(`Добавлено ${batchSize} слов из буфера. Текущий размер words: ${words.length}`);
+        const batchSize = Math.min(500, wordBuffer.length);
+        words = words.concat(wordBuffer.splice(0, batchSize));
+        console.log(`Добавлено ${batchSize} слов из буфера. Текущий размер words: ${words.length}`);
     }
 
     if (pdfDocument && blockStart >= words.length - wordCount * 5) {
-      setTimeout(loadNextBatch, 0);
+        setTimeout(loadNextBatch, 0);
     }
 
     if (blockStart >= words.length) {
-      wordBox.innerHTML = "";
-      fullTextDiv.innerHTML = words.join(" ");
-      pageIndicator.textContent = "Конец";
-      progressText.textContent = "Прогресс: 100%";
-      progressBar.style.width = "100%";
-      navigationSlider.value = 100;
-      localStorage.setItem("readProgress", current);
-      pauseButton.textContent = "Закончено";
-      pauseButton.disabled = true;
-      return;
+        wordBox.innerHTML = "";
+        fullTextDiv.innerHTML = words.join(" ");
+        pageIndicator.textContent = "Конец";
+        progressText.textContent = "Прогресс: 100%";
+        progressBar.style.width = "100%";
+        navigationSlider.value = 100;
+        localStorage.setItem("readProgress", current);
+        pauseButton.textContent = "Закончено";
+        pauseButton.disabled = true;
+        return;
     }
 
     const renderStart = Math.max(0, blockStart - renderWindow);
     const renderEnd = Math.min(words.length, blockEnd + renderWindow);
     const highlighted = words.slice(renderStart, renderEnd).map((w, i) => {
-      const globalIndex = renderStart + i;
-      return globalIndex >= blockStart && globalIndex < blockEnd
-        ? `<span class="highlight" data-index="${globalIndex}">${w}</span>`
-        : `<span data-index="${globalIndex}">${w}</span>`;
+        const globalIndex = renderStart + i;
+        return globalIndex >= blockStart && globalIndex < blockEnd
+            ? `<span class="highlight" data-index="${globalIndex}">${w}</span>`
+            : `<span data-index="${globalIndex}">${w}</span>`;
     }).join(" ");
 
-    const nextBlockStart = blockEnd;
-    const nextBlockEnd = nextBlockStart + wordCount;
-    const nextWords = words.slice(nextBlockStart, nextBlockEnd).join(" ");
+    const currentWords = words.slice(blockStart, blockEnd).join(" "); // Исправление: показываем текущий блок
 
     fullTextDiv.innerHTML = highlighted;
-    wordBox.innerHTML = nextWords || "Дальше ничего нет!";
+    wordBox.innerHTML = currentWords || "Дальше ничего нет!";
     wordBox.classList.add("next");
     setTimeout(() => wordBox.classList.remove("next"), 400);
     pageIndicator.textContent = `Страница ${Math.floor(blockStart / 200) + 1}`;
@@ -461,16 +459,16 @@
 
     const highlightedSpan = fullTextDiv.querySelector('.highlight');
     if (highlightedSpan) {
-      const containerHeight = fullTextDiv.clientHeight;
-      const spanHeight = highlightedSpan.offsetHeight;
-      const spanTop = highlightedSpan.offsetTop;
-      const scrollPosition = spanTop - (containerHeight / 2) + (spanHeight / 2);
-      fullTextDiv.scrollTo({
-        top: scrollPosition,
-        behavior: 'smooth'
-      });
+        const containerHeight = fullTextDiv.clientHeight;
+        const spanHeight = highlightedSpan.offsetHeight;
+        const spanTop = highlightedSpan.offsetTop;
+        const scrollPosition = spanTop - (containerHeight / 2) + (spanHeight / 2);
+        fullTextDiv.scrollTo({
+            top: scrollPosition,
+            behavior: 'smooth'
+        });
     }
-  }
+}
 
   function startReading() {
     if (isPaused) return;
