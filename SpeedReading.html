@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>БыстроЧтение</title>
+  <script src="https://unpkg.com/mammoth@1.8.0/mammoth.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
+  <script src="https://unpkg.com/rtf.js@1.0.6/dist/rtf.min.js"></script>
+  <script src="https://unpkg.com/@archive/odt2html@0.0.3/dist/odt2html.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.min.mjs" type="module"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: linear-gradient(to bottom right, #256be6, #2ed3b7);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh; /* Используем min-height вместо height */
+      overflow: auto; /* Разрешаем прокрутку, если контент не помещается */
+    }
+
+    header {
+      text-align: center;
+      padding: 1rem;
+      font-size: clamp(1rem, 2.5vw, 1.5rem); /* Масштабируемый размер шрифта */
+      font-weight: bold;
+      background: rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap; /* Перенос кнопок на маленьких экранах */
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: clamp(0.5rem, 2vw, 1rem); /* Адаптивные отступы */
+      gap: clamp(0.5rem, 1.5vw, 1rem);
+      overflow: hidden;
+    }
+
+    input[type="file"] {
+      color: white;
+      font-size: clamp(0.8rem, 2vw, 1rem);
+      margin-bottom: 0.5rem;
+    }
+
+    #fullText {
+      flex: 1;
+      overflow-y: auto;
+      padding: clamp(0.5rem, 2vw, 1rem);
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      font-size: clamp(0.8rem, 2.5vw, 1rem);
+      line-height: 1.6;
+      cursor: pointer;
+      position: relative;
+    }
+
+    #wordBox {
+      text-align: center;
+      font-size: clamp(1.2rem, 5vw, 2rem); /* Масштабируемый размер шрифта */
+      font-weight: bold;
+      padding: clamp(0.5rem, 3vw, 1.5rem);
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      min-height: 70px;
+   /*   transition: all 0.3s ease;  */
+    }
+
+    .highlight {
+      background: #2ed3b7;
+      border-radius: 6px;
+      padding: 2px 6px;
+      color: black;
+      transition: transform 0.2s ease;
+    }
+
+    .highlight.clicked {
+      transform: scale(1.1);
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.3rem, 1vw, 0.6rem);
+    }
+
+    label {
+      font-size: clamp(0.6rem, 1.5vw, 0.8rem);
+      margin-bottom: 2px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: #2ed3b7;
+      height: 4px;
+      touch-action: pan-y; /* Улучшает прокрутку на сенсорных устройствах */
+    }
+
+    #pageIndicator {
+      text-align: center;
+      font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+      opacity: 0.8;
+    }
+
+    #loadingIndicator {
+      text-align: center;
+      font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+      color: #2ed3b7;
+      opacity: 0.8;
+    }
+
+    .bottom {
+      padding-bottom: clamp(0.5rem, 2vw, 1rem);
+    }
+
+    #pauseButton,
+    #restartButton,
+    #rewindBack,
+    #rewindForward {
+      padding: clamp(0.5rem, 1.5vw, 0.8rem) clamp(0.8rem, 2vw, 1rem);
+      background: #2ed3b7;
+      border: none;
+      border-radius: 5px;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      font-size: clamp(0.8rem, 2vw, 1rem);
+      margin: 0.2rem; /* Отступы для сенсорных устройств */
+      min-width: 80px; /* Минимальная ширина кнопок */
+    }
+
+    #pauseButton:hover,
+    #restartButton:hover,
+    #rewindBack:hover,
+    #rewindForward:hover {
+      transform: scale(1.05);
+    }
+
+    #progress {
+      font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+      opacity: 0.8;
+      position: relative;
+      width: 100%;
+      height: 20px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    #progressBar {
+      height: 100%;
+      background: #2ed3b7;
+      transition: width 0.3s ease;
+    }
+
+    #progressText {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      line-height: 20px;
+      font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+    }
+
+    #navigation {
+      display: flex;
+      align-items: center;
+      gap: clamp(0.5rem, 1.5vw, 1rem);
+      flex-wrap: wrap; /* Перенос элементов на маленьких экранах */
+    }
+
+    #chapterSelect {
+      padding: clamp(0.3rem, 1vw, 0.5rem);
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: white;
+      border-radius: 5px;
+      font-size: clamp(0.8rem, 2vw, 1rem);
+    }
+
+    @keyframes pulse {
+      from {
+        opacity: 0.7;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+ /*   #wordBox.next {
+      animation: pulse 0.4s ease;
+    <!--  -->
+
+    /* Медиазапросы для адаптивности */
+
+    /* Мобильные устройства (до 768px) */
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      header > div {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      #fullText {
+        font-size: 0.9rem; /* Меньший шрифт для лучшей читаемости */
+        line-height: 1.4;
+      }
+
+      #wordBox {
+        font-size: 1.5rem; /* Уменьшаем шрифт */
+        padding: 0.5rem;
+      }
+
+      .controls {
+        gap: 0.3rem;
+      }
+
+      label {
+        font-size: 0.7rem;
+      }
+
+      input[type="range"] {
+        height: 6px; /* Увеличиваем для удобства на сенсорных экранах */
+      }
+
+      #pauseButton,
+      #restartButton,
+      #rewindBack,
+      #rewindForward {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.9rem;
+        min-width: 70px;
+      }
+
+      #navigation {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      #navigationSlider {
+        width: 100%;
+      }
+
+      #chapterSelect {
+        width: 100%;
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Планшеты (768px–1024px) */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      header {
+        padding: 0.8rem;
+        font-size: 1.2rem;
+      }
+
+      #fullText {
+        font-size: 0.95rem;
+        padding: 0.8rem;
+      }
+
+      #wordBox {
+        font-size: 1.8rem;
+        padding: 1rem;
+      }
+
+      #pauseButton,
+      #restartButton,
+      #rewindBack,
+      #rewindForward {
+        padding: 0.6rem 1rem;
+        font-size: 0.95rem;
+      }
+
+      #navigation {
+        gap: 0.8rem;
+      }
+
+      #chapterSelect {
+        font-size: 0.95rem;
+      }
+    }
+
+    /* Десктопы (1024px и выше) */
+    @media (min-width: 1025px) {
+      /* Оставляем стили как есть, они уже подходят для больших экранов */
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <span>БыстроЧтение</span>
+  <div>
+    <button id="rewindBack">Назад 10%</button>
+    <button id="pauseButton">Пауза</button>
+    <button id="restartButton">Перезапустить</button>
+    <button id="rewindForward">Вперед 10%</button>
+  </div>
+</header>
+
+<main>
+  <input type="file" id="fileInput" accept=".txt,.pdf,.docx,.html,.epub,.rtf,.odt">
+  <div id="loadingIndicator" style="display: none;">Загрузка...</div>
+  <div id="navigation">
+    <input type="range" id="navigationSlider" min="0" max="100" value="0">
+    <select id="chapterSelect" style="display: none;"></select>
+  </div>
+  <div id="fullText"></div>
+  <div id="wordBox"></div>
+  <div id="pageIndicator">Страница 1</div>
+  <div id="progress">
+    <div id="progressBar" style="width: 0%;"></div>
+    <span id="progressText">Прогресс: 0%</span>
+  </div>
+  <div class="controls bottom">
+    <label for="speedSlider">Скорость (слов/сек):</label>
+    <input type="range" id="speedSlider" min="0.3" max="15" step="0.1" value="1.5">
+    <label for="accelSlider">Макс. ускорение:</label>
+    <input type="range" id="accelSlider" min="0" max="15" step="0.1" value="0">
+    <label><input type="checkbox" id="autoAccel"> Автоускорение</label>
+    <label for="sizeSlider">Размер текста:</label>
+    <input type="range" id="sizeSlider" min="1" max="4" step="0.1" value="2">
+    <label for="wordCountSlider">Количество слов:</label>
+    <input type="range" id="wordCountSlider" min="3" max="15" step="1" value="3">
+  </div>
+</main>
+
+<script type="module">
+  if (window.location.protocol === "file:") {
+    alert("Пожалуйста, запустите приложение через локальный сервер (например, с помощью VS Code Live Server или команды 'python -m http.server 8000'), иначе загрузка файлов может не работать из-за ограничений CORS.");
+  }
+
+  let pdfjsLib;
+  try {
+    pdfjsLib = await import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.min.mjs');
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.worker.min.mjs';
+    console.log("pdf.js успешно загружен");
+  } catch (error) {
+    console.error("Ошибка загрузки pdf.js:", error);
+    alert("Не удалось загрузить библиотеку pdf.js. Проверьте подключение к интернету или попробуйте позже.");
+    throw error;
+  }
+
+  if (typeof mammoth === "undefined") {
+    console.error("Библиотека mammoth.js не загружена");
+    alert("Не удалось загрузить библиотеку mammoth.js для обработки .docx. Проверьте подключение к интернету.");
+  } else {
+    console.log("mammoth.js успешно загружен");
+  }
+  if (typeof ePub === "undefined") {
+    console.error("Библиотека epub.js не загружена");
+    alert("Не удалось загрузить библиотеку epub.js для обработки .epub. Проверьте подключение к интернету.");
+  } else {
+    console.log("epub.js успешно загружен");
+  }
+  if (typeof RTFJS === "undefined") {
+    console.error("Библиотека rtf.js не загружена");
+    alert("Не удалось загрузить библиотеку rtf.js для обработки .rtf. Проверьте подключение к интернету.");
+  } else {
+    console.log("rtf.js успешно загружен");
+  }
+  if (typeof ODT2HTML === "undefined") {
+    console.error("Библиотека odt2html не загружена");
+    alert("Не удалось загрузить библиотеку odt2html для обработки .odt. Проверьте подключение к интернету.");
+  } else {
+    console.log("odt2html успешно загружен");
+  }
+
+  let words = [], current = 0, interval, isPaused = false;
+  let wordBuffer = [];
+  const wordBox = document.getElementById('wordBox');
+  const fullTextDiv = document.getElementById('fullText');
+  const pageIndicator = document.getElementById('pageIndicator');
+  const progressDiv = document.getElementById('progress');
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const loadingIndicator = document.getElementById('loadingIndicator');
+  const pauseButton = document.getElementById('pauseButton');
+  const restartButton = document.getElementById('restartButton');
+  const rewindBack = document.getElementById('rewindBack');
+  const rewindForward = document.getElementById('rewindForward');
+  const navigationSlider = document.getElementById('navigationSlider');
+  const chapterSelect = document.getElementById('chapterSelect');
+  let wordCount = 3;
+  let pdfDocument = null;
+  let currentPageBatch = 0;
+  let totalPages = 0;
+  const pagesPerBatch = 5;
+  const renderWindow = 100;
+  const bufferThreshold = 500;
+  let chapters = [];
+
+  function updateDisplay() {
+    const blockStart = current * wordCount;
+    const blockEnd = blockStart + wordCount;
+
+    if (words.length < bufferThreshold && wordBuffer.length > 0) {
+      const batchSize = Math.min(500, wordBuffer.length);
+      words = words.concat(wordBuffer.splice(0, batchSize));
+      console.log(`Добавлено ${batchSize} слов из буфера. Текущий размер words: ${words.length}`);
+    }
+
+    if (pdfDocument && blockStart >= words.length - wordCount * 5) {
+      setTimeout(loadNextBatch, 0);
+    }
+
+    if (blockStart >= words.length) {
+      wordBox.innerHTML = "";
+      fullTextDiv.innerHTML = words.join(" ");
+      pageIndicator.textContent = "Конец";
+      progressText.textContent = "Прогресс: 100%";
+      progressBar.style.width = "100%";
+      navigationSlider.value = 100;
+      localStorage.setItem("readProgress", current);
+      pauseButton.textContent = "Закончено";
+      pauseButton.disabled = true;
+      return;
+    }
+
+    const renderStart = Math.max(0, blockStart - renderWindow);
+    const renderEnd = Math.min(words.length, blockEnd + renderWindow);
+    const highlighted = words.slice(renderStart, renderEnd).map((w, i) => {
+      const globalIndex = renderStart + i;
+      return globalIndex >= blockStart && globalIndex < blockEnd
+        ? `<span class="highlight" data-index="${globalIndex}">${w}</span>`
+        : `<span data-index="${globalIndex}">${w}</span>`;
+    }).join(" ");
+
+    const nextBlockStart = blockEnd;
+    const nextBlockEnd = nextBlockStart + wordCount;
+    const nextWords = words.slice(nextBlockStart, nextBlockEnd).join(" ");
+
+    fullTextDiv.innerHTML = highlighted;
+    wordBox.innerHTML = nextWords || "Дальше ничего нет!";
+    wordBox.classList.add("next");
+    setTimeout(() => wordBox.classList.remove("next"), 400);
+    pageIndicator.textContent = `Страница ${Math.floor(blockStart / 200) + 1}`;
+    const progressPercent = Math.round((blockStart / words.length) * 100);
+    progressText.textContent = `Прогресс: ${progressPercent}%`;
+    progressBar.style.width = `${progressPercent}%`;
+    navigationSlider.value = progressPercent;
+
+    const highlightedSpan = fullTextDiv.querySelector('.highlight');
+    if (highlightedSpan) {
+      const containerHeight = fullTextDiv.clientHeight;
+      const spanHeight = highlightedSpan.offsetHeight;
+      const spanTop = highlightedSpan.offsetTop;
+      const scrollPosition = spanTop - (containerHeight / 2) + (spanHeight / 2);
+      fullTextDiv.scrollTo({
+        top: scrollPosition,
+        behavior: 'smooth'
+      });
+    }
+  }
+
+  function startReading() {
+    if (isPaused) return;
+    clearInterval(interval);
+    const speed = parseFloat(document.getElementById('speedSlider').value);
+    const accelEnabled = document.getElementById('autoAccel').checked;
+    const accelLimit = parseFloat(document.getElementById('accelSlider').value);
+    let currentSpeed = speed;
+    let delay = 1000 / currentSpeed;
+    interval = setInterval(() => {
+      const blockStart = current * wordCount;
+      if (blockStart < words.length) {
+        current++;
+        updateDisplay();
+        if (accelEnabled && currentSpeed < accelLimit) {
+          currentSpeed += 0.02;
+          delay = 1000 / currentSpeed;
+          clearInterval(interval);
+          startReading();
+        }
+      } else {
+        current = Math.floor(words.length / wordCount);
+        updateDisplay();
+        clearInterval(interval);
+      }
+    }, delay);
+  }
+
+  function togglePause() {
+    isPaused = !isPaused;
+    pauseButton.textContent = isPaused ? "Продолжить" : "Пауза";
+    if (!isPaused) startReading();
+    else clearInterval(interval);
+  }
+
+  function restartReading() {
+    current = 0;
+    isPaused = false;
+    pauseButton.textContent = "Пауза";
+    pauseButton.disabled = false;
+    updateDisplay();
+    startReading();
+  }
+
+  function startReadingFromWord(index) {
+    if (index >= 0 && index < words.length) {
+      current = Math.floor(index / wordCount);
+      clearInterval(interval);
+      updateDisplay();
+      const clickedWord = fullTextDiv.querySelector(`span[data-index="${index}"]`);
+      if (clickedWord) {
+        clickedWord.classList.add("clicked");
+        setTimeout(() => clickedWord.classList.remove("clicked"), 200);
+      }
+      if (!isPaused) startReading();
+    }
+  }
+
+  function navigateToPercent(percent) {
+    const totalBlocks = Math.floor(words.length / wordCount);
+    current = Math.floor(totalBlocks * (percent / 100));
+    current = Math.min(current, totalBlocks);
+    clearInterval(interval);
+    updateDisplay();
+    if (!isPaused) startReading();
+  }
+
+  function rewind(direction) {
+    const totalBlocks = Math.floor(words.length / wordCount);
+    const step = Math.floor(totalBlocks * 0.1);
+    if (direction === 'back') {
+      current = Math.max(0, current - step);
+    } else {
+      current = Math.min(totalBlocks, current + step);
+    }
+    clearInterval(interval);
+    updateDisplay();
+    if (!isPaused) startReading();
+  }
+
+  async function loadNextBatch() {
+    if (!pdfDocument || currentPageBatch * pagesPerBatch >= totalPages) return;
+
+    loadingIndicator.style.display = "block";
+    const startTime = performance.now();
+    let batchText = "";
+    const startPage = currentPageBatch * pagesPerBatch + 1;
+    const endPage = Math.min(startPage + pagesPerBatch - 1, totalPages);
+
+    try {
+      console.log(`Загрузка страниц ${startPage}-${endPage} из ${totalPages}`);
+      for (let i = startPage; i <= endPage; i++) {
+        console.log(`Обработка страницы ${i}`);
+        const page = await pdfDocument.getPage(i);
+        const content = await page.getTextContent();
+        const pageText = content.items.map(item => item.str).join(" ");
+        console.log(`Текст страницы ${i}: ${pageText.slice(0, 50)}...`);
+        batchText += pageText + " ";
+      }
+
+      const newWords = batchText.trim().replace(/\s+/g, " ").split(" ");
+      console.log(`Извлечено ${newWords.length} слов`);
+      if (newWords.length > 0) {
+        wordBuffer = wordBuffer.concat(newWords);
+        updateDisplay();
+      }
+
+      currentPageBatch++;
+      const endTime = performance.now();
+      if (currentPageBatch * pagesPerBatch < totalPages) {
+        loadingIndicator.textContent = `Загрузка... (страницы ${startPage}-${endPage} из ${totalPages}, время: ${(endTime - startTime).toFixed(2)} мс)`;
+      } else {
+        loadingIndicator.style.display = "none";
+      }
+    } catch (error) {
+      console.error("Ошибка при загрузке следующей партии страниц:", error);
+      loadingIndicator.textContent = `Ошибка загрузки страниц: ${error.message}`;
+    }
+  }
+
+  async function handleFile(file) {
+    if (!file) {
+      alert("Пожалуйста, выберите файл!");
+      return;
+    }
+
+    const maxSizeMB = 50;
+    if (file.size > maxSizeMB * 1024 * 1024) {
+      alert(`Файл слишком большой (${(file.size / (1024 * 1024)).toFixed(2)} МБ). Максимальный размер: ${maxSizeMB} МБ.`);
+      return;
+    }
+
+    const ext = file.name.split('.').pop().toLowerCase();
+    let text = "";
+    pauseButton.disabled = false;
+    pauseButton.textContent = "Пауза";
+    restartButton.disabled = false;
+    pdfDocument = null;
+    currentPageBatch = 0;
+    totalPages = 0;
+    words = [];
+    wordBuffer = [];
+    chapters = [];
+    chapterSelect.style.display = "none";
+    chapterSelect.innerHTML = "";
+    loadingIndicator.style.display = "none";
+    navigationSlider.value = 0;
+
+    try {
+      if (ext === "txt") {
+        console.log("Обработка .txt...");
+        text = await file.text();
+        if (!text) throw new Error("Файл .txt пустой или нечитаемый.");
+        console.log(`Извлечённый текст (.txt): ${text.slice(0, 50)}...`);
+      } else if (ext === "html") {
+        console.log("Обработка .html...");
+        const html = await file.text();
+        const div = document.createElement("div");
+        div.innerHTML = html;
+        text = div.innerText;
+        if (!text.trim()) throw new Error("Файл .html не содержит текста.");
+        console.log(`Извлечённый текст (.html): ${text.slice(0, 50)}...`);
+      } else if (ext === "pdf") {
+        console.log("Обработка .pdf...");
+        if (!pdfjsLib) throw new Error("Библиотека pdf.js не загружена.");
+        const arrayBuffer = await file.arrayBuffer();
+        console.log("Загрузка PDF-документа...");
+        pdfDocument = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        totalPages = pdfDocument.numPages;
+        console.log(`Общее количество страниц: ${totalPages}`);
+        if (totalPages === 0) throw new Error("PDF-файл пустой.");
+
+        let pdfText = "";
+        const endPage = Math.min(pagesPerBatch, totalPages);
+        loadingIndicator.style.display = "block";
+        const startTime = performance.now();
+        loadingIndicator.textContent = `Загрузка... (страницы 1-${endPage} из ${totalPages})`;
+
+        for (let i = 1; i <= endPage; i++) {
+          console.log(`Обработка страницы ${i}`);
+          const page = await pdfDocument.getPage(i);
+          const content = await page.getTextContent();
+          const pageText = content.items.map(item => item.str).join(" ");
+          console.log(`Текст страницы ${i}: ${pageText.slice(0, 50)}...`);
+          pdfText += pageText + " ";
+        }
+        const endTime = performance.now();
+        loadingIndicator.textContent = `Загрузка... (страницы 1-${endPage} из ${totalPages}, время: ${(endTime - startTime).toFixed(2)} мс)`;
+        text = pdfText;
+        currentPageBatch = 1;
+        if (currentPageBatch * pagesPerBatch >= totalPages) {
+          loadingIndicator.style.display = "none";
+        }
+      } else if (ext === "docx") {
+        console.log("Обработка .docx...");
+        if (typeof mammoth === "undefined") throw new Error("Библиотека mammoth.js не загружена.");
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        text = result.value;
+        if (!text.trim()) throw new Error("Файл .docx пустой или текст не извлечен.");
+        console.log(`Извлечённый текст (.docx): ${text.slice(0, 50)}...`);
+      } else if (ext === "epub") {
+        console.log("Обработка .epub...");
+        if (typeof ePub === "undefined") throw new Error("Библиотека epub.js не загружена.");
+        const arrayBuffer = await file.arrayBuffer();
+        const book = ePub(arrayBuffer);
+        const contents = await book.opened;
+
+        const toc = await book.loaded.navigation;
+        let wordIndex = 0;
+        chapters = [];
+        for (let item of toc.toc) {
+          chapters.push({ label: item.label, href: item.href, startIndex: wordIndex });
+          const doc = await book.load(item.href);
+          const chapterText = (doc.body.innerText || "") + " ";
+          const chapterWords = chapterText.trim().replace(/\s+/g, " ").split(" ");
+          wordIndex += chapterWords.length;
+        }
+        if (chapters.length > 0) {
+          chapterSelect.style.display = "block";
+          chapters.forEach((chapter, idx) => {
+            const option = document.createElement("option");
+            option.value = idx;
+            option.textContent = chapter.label || `Глава ${idx + 1}`;
+            chapterSelect.appendChild(option);
+          });
+        }
+
+        let epubText = "";
+        for (let spineItem of contents.spine.items) {
+          const doc = await book.load(spineItem.href);
+          epubText += (doc.body.innerText || "") + " ";
+        }
+        text = epubText;
+        if (!text.trim()) throw new Error("Файл .epub пустой или текст не извлечен.");
+        console.log(`Извлечённый текст (.epub): ${text.slice(0, 50)}...`);
+      } else if (ext === "rtf") {
+        console.log("Обработка .rtf...");
+        if (typeof RTFJS === "undefined") throw new Error("Библиотека rtf.js не загружена.");
+        const arrayBuffer = await file.arrayBuffer();
+        const rtfContent = new TextDecoder().decode(arrayBuffer);
+        const rtf = new RTFJS.Document(rtfContent);
+        text = rtf.getText();
+        if (!text.trim()) throw new Error("Файл .rtf пустой или текст не извлечен.");
+        console.log(`Извлечённый текст (.rtf): ${text.slice(0, 50)}...`);
+      } else if (ext === "odt") {
+        console.log("Обработка .odt...");
+        if (typeof ODT2HTML === "undefined") throw new Error("Библиотека odt2html не загружена.");
+        const arrayBuffer = await file.arrayBuffer();
+        const odt2html = new ODT2HTML();
+        const odtContent = await odt2html.convert(arrayBuffer);
+        const div = document.createElement("div");
+        div.innerHTML = odtContent;
+        text = div.innerText;
+        if (!text.trim()) throw new Error("Файл .odt пустой или текст не извлечен.");
+        console.log(`Извлечённый текст (.odt): ${text.slice(0, 50)}...`);
+      } else {
+        alert("Этот формат не поддерживается! Поддерживаемые форматы: .txt, .pdf, .docx, .html, .epub, .rtf, .odt.");
+        return;
+      }
+
+      words = text.trim().replace(/\s+/g, " ").split(" ");
+      console.log(`Всего слов после обработки: ${words.length}`);
+      if (words.length === 0) {
+        alert("После обработки файла не найдено слов. Попробуйте другой файл.");
+        return;
+      }
+
+      navigationSlider.max = 100;
+      navigationSlider.value = 0;
+
+      current = parseInt(localStorage.getItem("readProgress")) || 0;
+      isPaused = false;
+      updateDisplay();
+      startReading();
+    } catch (error) {
+      console.error(`Ошибка обработки файла (${ext}):`, error);
+      alert(`Не удалось загрузить файл (${ext}): ${error.message}. Проверьте консоль браузера (F12) для подробностей.`);
+      loadingIndicator.style.display = "none";
+    }
+  }
+
+  document.getElementById("fileInput").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    handleFile(file);
+  });
+
+  document.getElementById("speedSlider").addEventListener("input", () => {
+    if (!isPaused) startReading();
+  });
+  document.getElementById("sizeSlider").addEventListener("input", (e) => {
+    wordBox.style.fontSize = `${e.target.value}rem`;
+  });
+  document.getElementById("wordCountSlider").addEventListener("input", (e) => {
+    wordCount = Math.max(1, parseInt(e.target.value));
+    const currentIndex = current * wordCount;
+    current = Math.floor(currentIndex / wordCount);
+    updateDisplay();
+    if (!isPaused) startReading();
+  });
+  pauseButton.addEventListener("click", togglePause);
+  restartButton.addEventListener("click", restartReading);
+  rewindBack.addEventListener("click", () => rewind('back'));
+  rewindForward.addEventListener("click", () => rewind('forward'));
+  navigationSlider.addEventListener("input", (e) => {
+    const percent = parseInt(e.target.value);
+    navigateToPercent(percent);
+  });
+  chapterSelect.addEventListener("change", (e) => {
+    const chapterIdx = parseInt(e.target.value);
+    const chapter = chapters[chapterIdx];
+    if (chapter) {
+      const totalBlocks = Math.floor(words.length / wordCount);
+      const blockIndex = Math.floor(chapter.startIndex / wordCount);
+      current = blockIndex;
+      clearInterval(interval);
+      updateDisplay();
+      if (!isPaused) startReading();
+    }
+  });
+
+  fullTextDiv.addEventListener("click", (e) => {
+    if (e.target.tagName === "SPAN") {
+      const index = parseInt(e.target.getAttribute("data-index"));
+      if (!isNaN(index)) {
+        startReadingFromWord(index);
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
