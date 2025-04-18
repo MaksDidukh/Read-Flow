@@ -206,7 +206,7 @@
       border-radius: 5px;
       font-size: clamp(0.8rem, 2vw, 1rem);
     }
-    /* Стили для модального окна */
+    /* Стили для модальных окон */
     .modal {
       display: none;
       position: fixed;
@@ -218,6 +218,10 @@
       z-index: 1000;
       justify-content: center;
       align-items: center;
+      animation: fadeIn 0.3s ease-out;
+    }
+    .modal.show {
+      display: flex;
     }
     .modal-content {
       background: rgba(255, 255, 255, 0.1);
@@ -230,6 +234,7 @@
       font-size: clamp(0.9rem, 2vw, 1.1rem);
       line-height: 1.6;
       position: relative;
+      animation: scaleIn 0.3s ease-out;
     }
     .modal-content h2 {
       font-size: clamp(1.2rem, 3vw, 1.5rem);
@@ -273,8 +278,14 @@
       margin: 0.5rem;
       transition: transform 0.2s ease;
     }
+    .modal-button.decline {
+      background: #ff4d4d;
+    }
     .modal-button:hover {
       transform: scale(1.05);
+    }
+    .modal-button.decline:hover {
+      background: #e63939;
     }
     .footer-link {
       background: none;
@@ -288,15 +299,37 @@
     .footer-link:hover {
       color: #2ed3b7;
     }
-    @keyframes pulse {
-      from {
-        opacity: 0.7;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    /* Стили для блокировки интерфейса */
+    .locked main,
+    .locked header,
+    .locked footer {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+    /* Стили для сообщения о CORS */
+    #corsWarning {
+      text-align: center;
+      font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+      color: #ff4d4d;
+      margin-bottom: 0.5rem;
+      display: none;
+    }
+    /* Анимации */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    @keyframes scaleIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    @keyframes scaleOut {
+      from { transform: scale(1); opacity: 1; }
+      to { transform: scale(0.8); opacity: 0; }
     }
     @media (max-width: 768px) {
       header {
@@ -353,6 +386,9 @@
       .modal-content h2 {
         font-size: 1.2rem;
       }
+      .modal-button {
+        padding: 0.5rem 1rem;
+      }
     }
     @media (min-width: 769px) and (max-width: 1024px) {
       header {
@@ -395,6 +431,7 @@
     </div>
   </header>
   <main>
+    <div id="corsWarning">Note: For best experience, run this app via a local server (e.g., 'python -m http.server') or host it online, as file loading may be restricted in some browsers.</div>
     <input type="file" id="fileInput" accept=".txt,.pdf,.docx,.html,.epub,.rtf" data-file-text="No file chosen">
     <div id="loadingIndicator" style="display: none;">Loading...</div>
     <div id="navigation">
@@ -421,16 +458,51 @@
     </div>
   </main>
   <footer>
-    <button class="footer-link" onclick="showModal('about')">About</button>
-    <button class="footer-link" onclick="showModal('privacy')">Privacy Policy</button>
+    <button class="footer-link" onclick="showModal('aboutModal')">About</button>
+    <button class="footer-link" onclick="showModal('privacyModal')">Privacy Policy</button>
   </footer>
+  <!-- Модальное окно для правил пользования -->
+  <div id="termsModal" class="modal">
+    <div class="modal-content">
+      <h2>Terms of Use</h2>
+      <p><strong>Effective Date</strong>: April 18, 2025</p>
+      <p>Welcome to ReadFlowBlocks, a web application developed by Maksym Didukh. By using this application, you agree to the following Terms of Use. Please read them carefully.</p>
+      <h3>1. Acceptance of Terms</h3>
+      <p>By accessing or using ReadFlowBlocks, you agree to be bound by these Terms of Use and our <a href="#" onclick="showModal('privacyModal'); closeModal('termsModal')">Privacy Policy</a>. If you do not agree, you must not use the application.</p>
+      <h3>2. Use of the Application</h3>
+      <p>- ReadFlowBlocks is provided for personal, non-commercial use to facilitate reading of text files in supported formats (.txt, .pdf, .docx, .html, .epub, .rtf).</p>
+      <p>- You agree to use the application only for lawful purposes and in accordance with these Terms.</p>
+      <p>- You are responsible for ensuring that any files you upload do not violate intellectual property rights or applicable laws.</p>
+      <h3>3. Local Processing</h3>
+      <p>- All files uploaded to ReadFlowBlocks are processed locally in your browser. No data is transmitted to our servers, as outlined in our Privacy Policy.</p>
+      <p>- You acknowledge that the security of your files depends on your device's security settings and browser.</p>
+      <h3>4. Intellectual Property</h3>
+      <p>- ReadFlowBlocks and its source code are the intellectual property of Maksym Didukh.</p>
+      <p>- You may not copy, modify, distribute, or reverse-engineer the application without explicit permission.</p>
+      <h3>5. Limitation of Liability</h3>
+      <p>- ReadFlowBlocks is provided "as is" without warranties of any kind, express or implied.</p>
+      <p>- We are not liable for any damages arising from your use of the application, including data loss or file corruption.</p>
+      <h3>6. Termination</h3>
+      <p>- We reserve the right to suspend or terminate access to ReadFlowBlocks at our discretion, particularly for violations of these Terms.</p>
+      <h3>7. Changes to Terms</h3>
+      <p>- We may update these Terms of Use from time to time. The updated version will be available within the application.</p>
+      <h3>8. Contact Information</h3>
+      <p>For questions or concerns about these Terms, please contact:</p>
+      <p><strong>Email</strong>: didukh.maxim@gmail.com</p>
+      <p><strong>GitHub</strong>: <a href="https://github.com/MaksDidukh">github.com/MaksDidukh</a></p>
+      <div style="display: flex; justify-content: center; gap: 1rem;">
+        <button class="modal-button" id="acceptTermsButton">Accept</button>
+        <button class="modal-button decline" id="declineTermsButton">Decline</button>
+      </div>
+    </div>
+  </div>
   <!-- Модальное окно для приветствия -->
   <div id="welcomeModal" class="modal">
     <div class="modal-content">
       <button class="modal-close" onclick="closeModal('welcomeModal')">Close</button>
       <h2>Welcome to ReadFlowBlocks</h2>
       <p>ReadFlowBlocks processes all your files locally in your browser, ensuring your data stays private. No data is sent to our servers.</p>
-      <p>Learn more about our <a href="#" onclick="showModal('privacy'); closeModal('welcomeModal')">Privacy Policy</a>.</p>
+      <p>Learn more about our <a href="#" onclick="showModal('privacyModal'); closeModal('welcomeModal')">Privacy Policy</a>.</p>
       <label><input type="checkbox" id="dontShowAgain"> Don't show again</label>
       <div>
         <button class="modal-button" onclick="closeModal('welcomeModal')">OK</button>
@@ -463,100 +535,138 @@
       <button class="modal-close" onclick="closeModal('privacyModal')">Close</button>
       <h2>Privacy Policy</h2>
       <p><strong>Effective Date</strong>: April 18, 2025</p>
-      <p>We, Maksym Didukh, the developer of ReadFlowBlocks, are committed to protecting your privacy and ensuring the security of your data. This Privacy Policy explains how we collect, use, store, and protect information related to your use of our application.</p>
-      <h3>1. Information Collection</h3>
-      <p>ReadFlowBlocks operates locally in your browser. We <strong>do not collect or store personal data</strong> on our servers, except as described below.</p>
+      <p>We, Maksym Didukh, the developer of ReadFlowBlocks, are committed to protecting your privacy and ensuring the security of your data. This Privacy Policy explains how we handle information related to your use of our web application, ReadFlowBlocks, which is designed to process text files locally in your browser.</p>
+      
+      <h3>1. Information We Collect</h3>
+      <p>ReadFlowBlocks is designed to operate entirely within your browser, ensuring that your data remains private. We do not collect or store personal data on our servers, except as described below.</p>
+      
       <h4>1.1. User-Uploaded Data</h4>
-      <p>- You may upload files in .txt, .pdf, .docx, .html, .epub, or .rtf formats for processing. These files are processed solely in your browser and <strong>are not transmitted to our servers</strong>.</p>
-      <p>- The content of uploaded files is temporarily stored in your device's memory for display and is cleared when you close the application or clear your browser cache.</p>
-      <h4>1.2. Automatically Collected Data</h4>
-      <p>- We <strong>do not collect</strong> data about your interactions with the application (e.g., usage statistics, IP addresses, or browser data).</p>
-      <p>- The application uses your browser's local storage (localStorage) to save your reading progress. This data is stored only on your device and can be deleted via your browser settings.</p>
-      <h4>1.3. Third-Party Libraries</h4>
-      <p>ReadFlowBlocks uses third-party libraries (e.g., pdf.js, mammoth.js, epub.js, rtf.js) to process files. These libraries are loaded via CDNs, which may collect technical data (e.g., IP addresses) per their own privacy policies. We do not control these processes but recommend reviewing the privacy policies of:</p>
+      <p>- You may upload files in supported formats (.txt, .pdf, .docx, .html, .epub, .rtf) for processing. These files are processed locally in your browser and <strong>are not transmitted to our servers</strong>.</p>
+      <p>- The content of uploaded files is temporarily stored in your device's memory during your session and is cleared when you close the application, refresh the page, or clear your browser cache.</p>
+      
+      <h4>1.2. Local Storage</h4>
+      <p>- ReadFlowBlocks uses your browser's local storage (localStorage) to save certain preferences and settings, such as:</p>
       <ul>
-        <li><a href="https://mozilla.github.io/pdf.js/">pdf.js</a></li>
-        <li><a href="https://github.com/mwilliamson/mammoth.js">mammoth.js</a></li>
-        <li><a href="https://github.com/futurepress/epub.js">epub.js</a></li>
-        <li><a href="https://github.com/ianjones/rtf.js">rtf.js</a></li>
-        <li><a href="https://www.jsdelivr.com/terms/privacy-policy-jsdelivr-net">jsDelivr CDN</a></li>
+        <li>Your reading progress (e.g., the last word or page you were on).</li>
+        <li>Whether you have accepted the Terms of Use.</li>
+        <li>Whether you have chosen to hide the welcome message.</li>
       </ul>
-      <h3>2. Data Usage</h3>
-      <p>- Uploaded files are used solely for processing and displaying text in the application.</p>
-      <p>- Local storage data is used to save your reading progress for continuity.</p>
-      <p>- We <strong>do not share, sell, or use your data</strong> for any other purposes, including marketing or analytics.</p>
+      <p>- This data is stored only on your device and can be deleted by clearing your browser's cache or site data.</p>
+      
+      <h4>1.3. Automatically Collected Data</h4>
+      <p>- We <strong>do not collect</strong> data about your interactions with the application, such as usage statistics, IP addresses, or browser details.</p>
+      <p>- No cookies or similar tracking technologies are used by ReadFlowBlocks.</p>
+      
+      <h4>1.4. Third-Party Libraries</h4>
+      <p>ReadFlowBlocks relies on third-party libraries to process files in various formats. These libraries are loaded via Content Delivery Networks (CDNs), which may collect technical data (e.g., IP addresses) according to their own privacy policies. We do not control these processes but recommend reviewing the privacy policies of the following libraries and services:</p>
+      <ul>
+        <li><a href="https://mozilla.github.io/pdf.js/">pdf.js</a> (for PDF processing)</li>
+        <li><a href="https://github.com/mwilliamson/mammoth.js">mammoth.js</a> (for DOCX processing)</li>
+        <li><a href="https://github.com/futurepress/epub.js">epub.js</a> (for EPUB processing)</li>
+        <li><a href="https://github.com/ianjones/rtf.js">rtf.js</a> (for RTF processing)</li>
+        <li><a href="https://www.jsdelivr.com/terms/privacy-policy-jsdelivr-net">jsDelivr CDN</a> (for library delivery)</li>
+        <li><a href="https://unpkg.com/#privacy">UNPKG CDN</a> (for library delivery)</li>
+      </ul>
+      
+      <h3>2. How We Use Your Data</h3>
+      <p>- <strong>User-uploaded files</strong>: These are used solely to process and display text within the application during your session.</p>
+      <p>- <strong>Local storage data</strong>: This is used to maintain continuity of your reading experience (e.g., resuming where you left off) and to remember your preferences (e.g., hiding the welcome message).</p>
+      <p>- We <strong>do not share, sell, or use your data</strong> for any other purposes, including marketing, analytics, or third-party services.</p>
+      
       <h3>3. Data Storage and Deletion</h3>
-      <p>- Data related to uploaded files is stored only in your device's memory and is cleared upon closing the application or refreshing the page.</p>
-      <p>- Local storage data persists until you manually delete it via your browser settings (e.g., clearing cache or site data).</p>
-      <p>- We <strong>do not store your data</strong> on our servers or in cloud storage.</p>
-      <h3>4. Security</h3>
-      <p>We strive to ensure the security of your interaction with the application. However, as ReadFlowBlocks runs in your browser, data security also depends on your device and browser. We recommend:</p>
+      <p>- <strong>Temporary storage</strong>: Data from uploaded files is stored in your device's memory only during your session and is automatically cleared when you close the application or refresh the page.</p>
+      <p>- <strong>Local storage</strong>: Preferences and settings saved in localStorage persist until you manually delete them via your browser settings (e.g., by clearing cache or site data).</p>
+      <p>- We <strong>do not store any of your data</strong> on our servers or in cloud storage.</p>
+      <p>- You can clear all application-related data stored in localStorage by clicking the button below.</p>
+      
+      <h3>4. Data Security</h3>
+      <p>We strive to ensure a secure user experience, but as ReadFlowBlocks operates within your browser, the security of your data also depends on your device and browser. To enhance security, we recommend:</p>
       <ul>
-        <li>Using an up-to-date browser.</li>
-        <li>Avoiding uploads of files containing sensitive information if you are unsure about your device's security.</li>
-        <li>Running the application via a local server (e.g., <code>python -m http.server</code>) to avoid CORS restrictions.</li>
+        <li>Using an up-to-date browser with the latest security patches.</li>
+        <li>Avoiding uploads of files containing sensitive or personal information if you are concerned about your device's security.</li>
+        <li>Running the application through a local server (e.g., using <code>python -m http.server</code>) to avoid CORS restrictions and enhance file loading reliability.</li>
       </ul>
-      <h3>5. User Rights</h3>
-      <p>Under data protection laws (e.g., GDPR), you have the right to:</p>
+      
+      <h3>5. Your Rights</h3>
+      <p>Under applicable data protection laws, such as the General Data Protection Regulation (GDPR), you have the following rights regarding your data:</p>
       <ul>
-        <li>Know what data is collected (as outlined in Section 1).</li>
-        <li>Delete data stored in localStorage via your browser settings.</li>
-        <li>Contact us with any privacy-related questions using the contact information below.</li>
+        <li><strong>Right to be informed</strong>: This Privacy Policy outlines what data is collected and how it is used.</li>
+        <li><strong>Right to access</strong>: You can view data stored in localStorage via your browser's developer tools (F12 → Application → Local Storage).</li>
+        <li><strong>Right to erasure</strong>: You can delete localStorage data by clearing your browser's cache or site data, or by using the "Clear Application Cache" button below.</li>
+        <li><strong>Right to object</strong>: Since no data is collected or shared, there is no processing to object to.</li>
+        <li><strong>Right to lodge a complaint</strong>: You may contact us or a supervisory authority if you have concerns about our privacy practices.</li>
       </ul>
-      <h3>6. Children</h3>
-      <p>ReadFlowBlocks is not intended for use by children under 13 years old. We do not collect data from users under this age. If you believe a child under 13 has used the application, please contact us.</p>
-      <h3>7. Changes to This Privacy Policy</h3>
-      <p>We may update this Privacy Policy to reflect changes in the application or legal requirements. The updated version will be available within the application.</p>
-      <h3>8. Contact Information</h3>
-      <p>For any questions, concerns, or requests related to this Privacy Policy, please contact us:</p>
-      <p><strong>Email</strong>: didukh.maxim@gmail.com</p>
+      <p>To exercise these rights or for any privacy-related questions, please contact us using the details below.</p>
+      
+      <h3>6. Cookies and Tracking Technologies</h3>
+      <p>- ReadFlowBlocks <strong>does not use cookies</strong> or any form of tracking technologies (e.g., pixels, beacons).</p>
+      <p>- The application relies solely on local processing and localStorage for functionality, ensuring no tracking occurs.</p>
+      
+      <h3>7. Children's Privacy</h3>
+      <p>ReadFlowBlocks is not intended for use by children under 13 years of age. We do not knowingly collect data from users under this age. If you believe a child under 13 has used the application, please contact us immediately so we can provide guidance on removing any locally stored data.</p>
+      
+      <h3>8. Changes to This Privacy Policy</h3>
+      <p>We may update this Privacy Policy from time to time to reflect changes in the application, legal requirements, or user feedback. The updated version will be available within the application, and the effective date will be revised accordingly. We encourage you to review this policy periodically.</p>
+      
+      <h3>9. Contact Information</h3>
+      <p>If you have any questions, concerns, or requests related to this Privacy Policy, please contact us:</p>
+      <p><strong>Email</strong>: <a href="mailto:didukh.maxim@gmail.com">didukh.maxim@gmail.com</a></p>
       <p><strong>GitHub</strong>: <a href="https://github.com/MaksDidukh">github.com/MaksDidukh</a></p>
+      <p>We aim to respond to all inquiries within a reasonable timeframe.</p>
+      
+      <h3>10. Governing Law</h3>
+      <p>This Privacy Policy is governed by the laws of the jurisdiction in which the developer operates. Any disputes arising from this policy will be resolved in accordance with applicable laws.</p>
+      
+      <div style="display: flex; justify-content: center;">
+        <button class="modal-button" id="clearCacheButton">Clear Application Cache</button>
+      </div>
     </div>
   </div>
-  <script type="module">
-    // Check if running via file://
+  <script>
+    // Проверка протокола file:// и показ сообщения о CORS
     if (window.location.protocol === "file:") {
-      alert(
-        "Please run the application through a local server (e.g., using VS Code Live Server or the command 'python -m http.server 8000'), otherwise file loading may not work due to CORS restrictions."
-      );
+      document.getElementById("corsWarning").style.display = "block";
     }
 
-    // Load pdf.js
+    // Загрузка pdf.js
     let pdfjsLib;
-    try {
-      pdfjsLib = await import("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.min.mjs");
-      pdfjsLib.GlobalWorkerOptions.workerSrc =
-        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.worker.min.mjs";
-      console.log("pdf.js successfully loaded");
-    } catch (error) {
-      console.error("Error loading pdf.js:", error);
-      alert("Failed to load the pdf.js library. Check your internet connection or try again later.");
-      throw error;
-    }
+    import("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.min.mjs")
+      .then(module => {
+        pdfjsLib = module;
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.worker.min.mjs";
+        console.log("pdf.js successfully loaded");
+      })
+      .catch(error => {
+        console.error("Error loading pdf.js:", error);
+        alert("Failed to load the pdf.js library. Check your internet connection or try again later.");
+      });
 
-    // Check library loading
-    if (typeof mammoth === "undefined") {
-      console.error("mammoth.js library not loaded");
-      alert("Failed to load the mammoth.js library for processing .docx files. Check your internet connection.");
-    } else {
-      console.log("mammoth.js successfully loaded");
-    }
+    // Проверка загрузки библиотек
+    window.addEventListener("load", () => {
+      if (typeof mammoth === "undefined") {
+        console.error("mammoth.js library not loaded");
+        alert("Failed to load the mammoth.js library for processing .docx files. Check your internet connection.");
+      } else {
+        console.log("mammoth.js successfully loaded");
+      }
 
-    if (typeof ePub === "undefined") {
-      console.error("epub.js library not loaded");
-      alert("Failed to load the epub.js library for processing .epub files. Check your internet connection.");
-    } else {
-      console.log("epub.js successfully loaded");
-    }
+      if (typeof ePub === "undefined") {
+        console.error("epub.js library not loaded");
+        alert("Failed to load the epub.js library for processing .epub files. Check your internet connection.");
+      } else {
+        console.log("epub.js successfully loaded");
+      }
 
-    if (typeof RTFJS === "undefined") {
-      console.error("rtf.js library not loaded");
-      alert("Failed to load the rtf.js library for processing .rtf files. Check your internet connection.");
-    } else {
-      console.log("rtf.js successfully loaded");
-    }
+      if (typeof RTFJS === "undefined") {
+        console.error("rtf.js library not loaded");
+        alert("Failed to load the rtf.js library for processing .rtf files. Check your internet connection.");
+      } else {
+        console.log("rtf.js successfully loaded");
+      }
+    });
 
-    // Initialize variables
+    // Инициализация переменных
     let words = [],
       current = 0,
       interval,
@@ -583,38 +693,33 @@
     const bufferThreshold = 500;
     let chapters = [];
 
-    // Welcome message
+    // Приветственное сообщение
     const welcomeMessage = "This project was created for you, with the hope that it will spark and simplify your interest in reading books. Dive into the world of stories and knowledge with ease, and let this tool make your reading journey both exciting and effortless!";
     const welcomeWords = welcomeMessage.trim().replace(/\s+/g, " ").split(" ");
-
-    // Set welcome message as default
     words = [...welcomeWords];
 
-    // Update file input text
+    // Обновление текста input
     function updateFileInputText() {
       const fileInput = document.getElementById("fileInput");
       const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : "No file chosen";
       fileInput.setAttribute("data-file-text", fileName);
     }
 
-    // Update text display
+    // Обновление отображения текста
     function updateDisplay() {
       const blockStart = current * wordCount;
       const blockEnd = blockStart + wordCount;
 
-      // Refill word buffer
       if (words.length < bufferThreshold && wordBuffer.length > 0) {
         const batchSize = Math.min(500, wordBuffer.length);
         words = words.concat(wordBuffer.splice(0, batchSize));
         console.log(`Added ${batchSize} words from buffer. Current words size: ${words.length}`);
       }
 
-      // Load next batch for PDF
       if (pdfDocument && blockStart >= words.length - wordCount * 5) {
         setTimeout(loadNextBatch, 0);
       }
 
-      // Check for end of text
       if (blockStart >= words.length) {
         wordBox.innerHTML = "";
         fullTextDiv.innerHTML = words.join(" ");
@@ -628,7 +733,6 @@
         return;
       }
 
-      // Render text
       const renderStart = Math.max(0, blockStart - renderWindow);
       const renderEnd = Math.min(words.length, blockEnd + renderWindow);
       const highlighted = words
@@ -642,7 +746,6 @@
         .join(" ");
 
       const currentWords = words.slice(blockStart, blockEnd).join(" ");
-
       fullTextDiv.innerHTML = highlighted;
       wordBox.innerHTML = currentWords || "Nothing more to read!";
       wordBox.classList.add("next");
@@ -653,7 +756,6 @@
       progressBar.style.width = `${progressPercent}%`;
       navigationSlider.value = progressPercent;
 
-      // Scroll to highlighted text
       const highlightedSpan = fullTextDiv.querySelector(".highlight");
       if (highlightedSpan) {
         const containerHeight = fullTextDiv.clientHeight;
@@ -667,7 +769,7 @@
       }
     }
 
-    // Start reading
+    // Начало чтения
     function startReading() {
       if (isPaused) return;
       clearInterval(interval);
@@ -695,7 +797,7 @@
       }, delay);
     }
 
-    // Pause/resume
+    // Пауза/возобновление
     function togglePause() {
       isPaused = !isPaused;
       pauseButton.textContent = isPaused ? "Continue" : "Pause";
@@ -703,7 +805,7 @@
       else clearInterval(interval);
     }
 
-    // Restart reading
+    // Перезапуск чтения
     function restartReading() {
       current = 0;
       isPaused = false;
@@ -713,7 +815,7 @@
       startReading();
     }
 
-    // Start reading from a specific word
+    // Чтение с определённого слова
     function startReadingFromWord(index) {
       if (index >= 0 && index < words.length) {
         current = Math.floor(index / wordCount);
@@ -728,7 +830,7 @@
       }
     }
 
-    // Navigate to a percentage of progress
+    // Навигация по проценту прогресса
     function navigateToPercent(percent) {
       const totalBlocks = Math.floor(words.length / wordCount);
       current = Math.floor(totalBlocks * (percent / 100));
@@ -738,7 +840,7 @@
       if (!isPaused) startReading();
     }
 
-    // Rewind backward/forward
+    // Перемотка назад/вперёд
     function rewind(direction) {
       const totalBlocks = Math.floor(words.length / wordCount);
       const step = Math.floor(totalBlocks * 0.1);
@@ -752,7 +854,7 @@
       if (!isPaused) startReading();
     }
 
-    // Load next batch of PDF pages
+    // Загрузка следующей партии страниц PDF
     async function loadNextBatch() {
       if (!pdfDocument || currentPageBatch * pagesPerBatch >= totalPages) return;
 
@@ -793,7 +895,7 @@
       }
     }
 
-    // Handle uploaded file
+    // Обработка загруженного файла
     async function handleFile(file) {
       if (!file) {
         alert("Please select a file!");
@@ -932,7 +1034,7 @@
         console.log(`Total words after processing: ${words.length}`);
         if (words.length === 0) {
           alert("No words found after processing the file. Try another file.");
-          words = [...welcomeWords]; // Revert to welcome message
+          words = [...welcomeWords];
           return;
         }
 
@@ -949,13 +1051,13 @@
           `Failed to load file (${ext}): ${error.message}. Check the browser console (F12) for details.`
         );
         loadingIndicator.style.display = "none";
-        words = [...welcomeWords]; // Revert to welcome message
+        words = [...welcomeWords];
         updateDisplay();
         startReading();
       }
     }
 
-    // Event listeners
+    // Обработчики событий
     document.getElementById("fileInput").addEventListener("change", (e) => {
       updateFileInputText();
       const file = e.target.files[0];
@@ -1010,32 +1112,112 @@
       }
     });
 
-    // Modal functions
+    // Функции модальных окон
     function showModal(modalId) {
+      console.log(`Attempting to show modal: ${modalId}`);
       const modal = document.getElementById(modalId);
       if (modal) {
+        modal.classList.add('show');
         modal.style.display = "flex";
+        console.log(`Modal ${modalId} shown successfully`);
+      } else {
+        console.error(`Modal with ID ${modalId} not found`);
       }
     }
 
     function closeModal(modalId) {
+      console.log(`Attempting to close modal: ${modalId}`);
       const modal = document.getElementById(modalId);
       if (modal) {
-        modal.style.display = "none";
-        if (modalId === "welcomeModal" && document.getElementById("dontShowAgain").checked) {
-          localStorage.setItem("hideWelcomeModal", "true");
+        modal.style.animation = 'fadeOut 0.3s ease-out, scaleOut 0.3s ease-out';
+        setTimeout(() => {
+          modal.classList.remove('show');
+          modal.style.display = "none";
+          modal.style.animation = '';
+          console.log(`Modal ${modalId} closed successfully`);
+          if (modalId === "welcomeModal" && document.getElementById("dontShowAgain").checked) {
+            localStorage.setItem("hideWelcomeModal", "true");
+          }
+        }, 300);
+      } else {
+        console.error(`Modal with ID ${modalId} not found`);
+      }
+    }
+
+    function acceptTerms() {
+      console.log("Accept terms clicked");
+      localStorage.setItem("termsAccepted", "true");
+      document.body.classList.remove("locked");
+      console.log("Removed 'locked' class from body");
+      closeModal("termsModal");
+      if (!localStorage.getItem("hideWelcomeModal")) {
+        showModal("welcomeModal");
+      }
+    }
+
+    function declineTerms() {
+      console.log("Decline terms clicked");
+      alert("You must accept the Terms of Use to use ReadFlowBlocks. Please accept to continue.");
+    }
+
+    function clearCache() {
+      console.log("Clear cache clicked");
+      localStorage.clear();
+      console.log("localStorage cleared");
+      closeModal("privacyModal");
+      window.location.reload();
+    }
+
+    // Инициализация модальных окон
+    function initializeTermsModal() {
+      console.log("Checking terms acceptance...");
+      const termsAccepted = localStorage.getItem("termsAccepted");
+      console.log(`termsAccepted: ${termsAccepted}`);
+      if (!termsAccepted || termsAccepted !== "true") {
+        console.log("Terms not accepted, showing termsModal");
+        document.body.classList.add("locked");
+        showModal("termsModal");
+      } else {
+        console.log("Terms accepted, checking welcome modal");
+        document.body.classList.remove("locked");
+        if (!localStorage.getItem("hideWelcomeModal")) {
+          showModal("welcomeModal");
         }
       }
     }
 
-    // Show welcome modal on page load
-    window.addEventListener("load", () => {
-      if (!localStorage.getItem("hideWelcomeModal")) {
-        showModal("welcomeModal");
+    // Привязка обработчиков после загрузки DOM
+    document.addEventListener("DOMContentLoaded", () => {
+      console.log("DOM fully loaded");
+
+      const acceptButton = document.getElementById("acceptTermsButton");
+      if (acceptButton) {
+        acceptButton.addEventListener("click", acceptTerms);
+        console.log("Accept button event listener added");
+      } else {
+        console.error("Accept button not found");
       }
+
+      const declineButton = document.getElementById("declineTermsButton");
+      if (declineButton) {
+        declineButton.addEventListener("click", declineTerms);
+        console.log("Decline button event listener added");
+      } else {
+        console.error("Decline button not found");
+      }
+
+      const clearCacheButton = document.getElementById("clearCacheButton");
+      if (clearCacheButton) {
+        clearCacheButton.addEventListener("click", clearCache);
+        console.log("Clear cache button event listener added");
+      } else {
+        console.error("Clear cache button not found");
+      }
+
+      initializeTermsModal();
     });
 
-    // Initialize file input text and start reading welcome message
+    // Инициализация
     updateFileInputText();
     updateDisplay();
     startReading();
