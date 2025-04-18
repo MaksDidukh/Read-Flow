@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/MaksDidukh/ReadFlowBlocks/refs/heads/main/ReadFlowBlockImageFinal-removebg108_108.png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ReadFlowBlocks: A web app for reading text files with customizable speed and navigation.">
+  <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/MaksDidukh/ReadFlowBlocks/refs/heads/main/ReadFlowBlockImageFinal-removebg108_108.png">
   <title>ReadFlowBlocks</title>
   <script src="https://unpkg.com/mammoth@1.8.0/mammoth.browser.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
@@ -424,55 +425,56 @@
   <header>
     <span>ReadFlowBlocks <img src="https://raw.githubusercontent.com/MaksDidukh/ReadFlowBlocks/refs/heads/main/ReadFlowBlockImageFinal-removebg108_108.png" alt="ReadFlowBlocks Icon" style="width: 1.5rem; height: 1.5rem; vertical-align: middle;"></span>
     <div>
-      <button id="rewindBack">Back 10%</button>
-      <button id="pauseButton">Pause</button>
-      <button id="restartButton">Restart</button>
-      <button id="rewindForward">Forward 10%</button>
+      <button id="rewindBack" aria-label="Rewind Back 10%">Back 10%</button>
+      <button id="pauseButton" aria-label="Pause Reading">Pause</button>
+      <button id="restartButton" aria-label="Restart Reading">Restart</button>
+      <button id="rewindForward" aria-label="Rewind Forward 10%">Forward 10%</button>
     </div>
   </header>
   <main>
     <div id="corsWarning">Note: For best experience, run this app via a local server (e.g., 'python -m http.server') or host it online, as file loading may be restricted in some browsers.</div>
-    <input type="file" id="fileInput" accept=".txt,.pdf,.docx,.html,.epub,.rtf" data-file-text="No file chosen">
+    <input type="file" id="fileInput" accept=".txt,.pdf,.docx,.html,.epub,.rtf" data-file-text="No file chosen" aria-label="Upload a text file">
     <div id="loadingIndicator" style="display: none;">Loading...</div>
     <div id="navigation">
-      <input type="range" id="navigationSlider" min="0" max="100" value="0">
-      <select id="chapterSelect" style="display: none;"></select>
+      <input type="range" id="navigationSlider" min="0" max="100" value="0" aria-label="Navigate reading progress">
+      <select id="chapterSelect" style="display: none;" aria-label="Select chapter"></select>
     </div>
-    <div id="fullText"></div>
-    <div id="wordBox"></div>
-    <div id="pageIndicator">Page 1</div>
-    <div id="progress">
+    <div id="fullText" role="region" aria-label="Full text display"></div>
+    <div id="wordBox" role="region" aria-label="Current word display"></div>
+    <div id="pageIndicator" aria-live="polite">Page 1</div>
+    <div id="progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
       <div id="progressBar" style="width: 0%;"></div>
-      <span id="progressText">Progress: 0%</span>
+      <span id="progressText" aria-live="polite">Progress: 0%</span>
     </div>
     <div class="controls bottom">
       <label for="speedSlider">Speed (words/sec):</label>
-      <input type="range" id="speedSlider" min="0.3" max="15" step="0.1" value="1.5">
+      <input type="range" id="speedSlider" min="0.3" max="15" step="0.1" value="1.5" aria-label="Adjust reading speed">
       <label for="accelSlider">Max Acceleration:</label>
-      <input type="range" id="accelSlider" min="0" max="15" step="0.1" value="0">
-      <label><input type="checkbox" id="autoAccel"> Auto Acceleration</label>
+      <input type="range" id="accelSlider" min="0" max="15" step="0.1" value="0" aria-label="Adjust maximum acceleration">
+      <label><input type="checkbox" id="autoAccel" aria-label="Enable auto acceleration"> Auto Acceleration</label>
       <label for="sizeSlider">Text Size:</label>
-      <input type="range" id="sizeSlider" min="1" max="4" step="0.1" value="2">
+      <input type="range" id="sizeSlider" min="1" max="4" step="0.1" value="2" aria-label="Adjust text size">
       <label for="wordCountSlider">Number of Words:</label>
-      <input type="range" id="wordCountSlider" min="3" max="15" step="1" value="3">
+      <input type="range" id="wordCountSlider" min="3" max="15" step="1" value="3" aria-label="Adjust number of words displayed">
     </div>
   </main>
   <footer>
-    <button class="footer-link" onclick="showModal('aboutModal')">About</button>
-    <button class="footer-link" onclick="showModal('privacyModal')">Privacy Policy</button>
+    <button class="footer-link" onclick="showModal('aboutModal')" aria-label="View About">About</button>
+    <button class="footer-link" onclick="showModal('privacyModal')" aria-label="View Privacy Policy">Privacy Policy</button>
+    <span>Hosted on <a href="https://www.netlify.com" target="_blank" style="color: #2ed3b7;">Netlify</a></span>
   </footer>
   <!-- Модальное окно для правил пользования -->
-  <div id="termsModal" class="modal">
+  <div id="termsModal" class="modal" role="dialog" aria-labelledby="termsModalTitle">
     <div class="modal-content">
-      <h2>Terms of Use</h2>
+      <h2 id="termsModalTitle">Terms of Use</h2>
       <p><strong>Effective Date</strong>: April 18, 2025</p>
       <p>Welcome to ReadFlowBlocks, a web application developed by Maksym Didukh. By using this application, you agree to the following Terms of Use. Please read them carefully.</p>
       <h3>1. Acceptance of Terms</h3>
-      <p>By accessing or using ReadFlowBlocks, you agree to be bound by these Terms of Use and our <a href="#" onclick="showModal('privacyModal'); closeModal('termsModal')">Privacy Policy</a>. If you do not agree, you must not use the application.</p>
+      <p>By accessing or using ReadFlowBlocks, you agree to be bound by these Terms of Use and our <a href="#" onclick="showModal('privacyModal'); closeModal('termsModal')" aria-label="View Privacy Policy">Privacy Policy</a>. If you do not agree, you must not use the application.</p>
       <h3>2. Use of the Application</h3>
       <p>- ReadFlowBlocks is provided for personal, non-commercial use to facilitate reading of text files in supported formats (.txt, .pdf, .docx, .html, .epub, .rtf).</p>
       <p>- You agree to use the application only for lawful purposes and in accordance with these Terms.</p>
-      <p>- You are responsible for ensuring that any files you upload do not violate intellectual property rights or applicable laws.</p>
+      <p>- You are solely responsible for ensuring that any files you upload comply with intellectual property rights and applicable laws. Uploading unauthorized or illegal content, such as pirated books, is strictly prohibited.</p>
       <h3>3. Local Processing</h3>
       <p>- All files uploaded to ReadFlowBlocks are processed locally in your browser. No data is transmitted to our servers, as outlined in our Privacy Policy.</p>
       <p>- You acknowledge that the security of your files depends on your device's security settings and browser.</p>
@@ -484,36 +486,38 @@
       <p>- We are not liable for any damages arising from your use of the application, including data loss or file corruption.</p>
       <h3>6. Termination</h3>
       <p>- We reserve the right to suspend or terminate access to ReadFlowBlocks at our discretion, particularly for violations of these Terms.</p>
-      <h3>7. Changes to Terms</h3>
+      <h3>7. Intended Audience</h3>
+      <p>- This application is intended for users worldwide. However, you are responsible for ensuring compliance with the laws of your jurisdiction when using the application.</p>
+      <h3>8. Changes to Terms</h3>
       <p>- We may update these Terms of Use from time to time. The updated version will be available within the application.</p>
-      <h3>8. Contact Information</h3>
+      <h3>9. Contact Information</h3>
       <p>For questions or concerns about these Terms, please contact:</p>
-      <p><strong>Email</strong>: didukh.maxim@gmail.com</p>
+      <p><strong>Email</strong>: <a href="mailto:didukh.maxim@gmail.com">didukh.maxim@gmail.com</a></p>
       <p><strong>GitHub</strong>: <a href="https://github.com/MaksDidukh">github.com/MaksDidukh</a></p>
       <div style="display: flex; justify-content: center; gap: 1rem;">
-        <button class="modal-button" id="acceptTermsButton">Accept</button>
-        <button class="modal-button decline" id="declineTermsButton">Decline</button>
+        <button class="modal-button" id="acceptTermsButton" aria-label="Accept Terms of Use">Accept</button>
+        <button class="modal-button decline" id="declineTermsButton" aria-label="Decline Terms of Use">Decline</button>
       </div>
     </div>
   </div>
   <!-- Модальное окно для приветствия -->
-  <div id="welcomeModal" class="modal">
+  <div id="welcomeModal" class="modal" role="dialog" aria-labelledby="welcomeModalTitle">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeModal('welcomeModal')">Close</button>
-      <h2>Welcome to ReadFlowBlocks</h2>
+      <button class="modal-close" onclick="closeModal('welcomeModal')" aria-label="Close Welcome Modal">Close</button>
+      <h2 id="welcomeModalTitle">Welcome to ReadFlowBlocks</h2>
       <p>ReadFlowBlocks processes all your files locally in your browser, ensuring your data stays private. No data is sent to our servers.</p>
-      <p>Learn more about our <a href="#" onclick="showModal('privacyModal'); closeModal('welcomeModal')">Privacy Policy</a>.</p>
-      <label><input type="checkbox" id="dontShowAgain"> Don't show again</label>
+      <p>Learn more about our <a href="#" onclick="showModal('privacyModal'); closeModal('welcomeModal')" aria-label="View Privacy Policy">Privacy Policy</a>.</p>
+      <label><input type="checkbox" id="dontShowAgain" aria-label="Do not show welcome message again"> Don't show again</label>
       <div>
-        <button class="modal-button" onclick="closeModal('welcomeModal')">OK</button>
+        <button class="modal-button" onclick="closeModal('welcomeModal')" aria-label="Close Welcome Modal">OK</button>
       </div>
     </div>
   </div>
   <!-- Модальное окно для About -->
-  <div id="aboutModal" class="modal">
+  <div id="aboutModal" class="modal" role="dialog" aria-labelledby="aboutModalTitle">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeModal('aboutModal')">Close</button>
-      <h2>About ReadFlowBlocks</h2>
+      <button class="modal-close" onclick="closeModal('aboutModal')" aria-label="Close About Modal">Close</button>
+      <h2 id="aboutModalTitle">About ReadFlowBlocks</h2>
       <p>ReadFlowBlocks is an innovative web application designed to simplify and enhance your reading experience. Upload books in .txt, .pdf, .docx, .html, .epub, or .rtf formats and enjoy reading with customizable speed, word count, and chapter navigation.</p>
       <h3>Key Features</h3>
       <ul>
@@ -523,26 +527,36 @@
         <li>Progress tracking and text size customization.</li>
         <li>Simple and intuitive interface.</li>
       </ul>
+      <h3>Third-Party Licenses</h3>
+      <p>ReadFlowBlocks uses the following open-source libraries:</p>
+      <ul>
+        <li><a href="https://github.com/mozilla/pdf.js">pdf.js</a> (Apache 2.0 License)</li>
+        <li><a href="https://github.com/mwilliamson/mammoth.js">mammoth.js</a> (MIT License)</li>
+        <li><a href="https://github.com/futurepress/epub.js">epub.js</a> (MIT License)</li>
+        <li><a href="https://github.com/ianjones/rtf.js">rtf.js</a> (MIT License)</li>
+      </ul>
       <h3>Developer</h3>
       <p><strong>Name</strong>: Maksym Didukh</p>
-      <p><strong>Email</strong>: didukh.maxim@gmail.com</p>
+      <p><strong>Email</strong>: <a href="mailto:didukh.maxim@gmail.com">didukh.maxim@gmail.com</a></p>
       <p><strong>GitHub</strong>: <a href="https://github.com/MaksDidukh">github.com/MaksDidukh</a></p>
+      <p><strong>Hosted on</strong>: <a href="https://www.netlify.com">Netlify</a></p>
     </div>
   </div>
   <!-- Модальное окно для Privacy Policy -->
-  <div id="privacyModal" class="modal">
+  <div id="privacyModal" class="modal" role="dialog" aria-labelledby="privacyModalTitle">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeModal('privacyModal')">Close</button>
-      <h2>Privacy Policy</h2>
+      <button class="modal-close" onclick="closeModal('privacyModal')" aria-label="Close Privacy Policy Modal">Close</button>
+      <h2 id="privacyModalTitle">Privacy Policy</h2>
       <p><strong>Effective Date</strong>: April 18, 2025</p>
       <p>We, Maksym Didukh, the developer of ReadFlowBlocks, are committed to protecting your privacy and ensuring the security of your data. This Privacy Policy explains how we handle information related to your use of our web application, ReadFlowBlocks, which is designed to process text files locally in your browser.</p>
       
       <h3>1. Information We Collect</h3>
-      <p>ReadFlowBlocks is designed to operate entirely within your browser, ensuring that your data remains private. We do not collect or store personal data on our servers, except as described below.</p>
+      <p>ReadFlowBlocks operates entirely within your browser, ensuring that your data remains private. We do not collect or store personal data on our servers, except as described below.</p>
       
       <h4>1.1. User-Uploaded Data</h4>
       <p>- You may upload files in supported formats (.txt, .pdf, .docx, .html, .epub, .rtf) for processing. These files are processed locally in your browser and <strong>are not transmitted to our servers</strong>.</p>
       <p>- The content of uploaded files is temporarily stored in your device's memory during your session and is cleared when you close the application, refresh the page, or clear your browser cache.</p>
+      <p>- <strong>Warning</strong>: Do not upload files containing sensitive or personal information, as the security of such data depends on your device's settings and browser.</p>
       
       <h4>1.2. Local Storage</h4>
       <p>- ReadFlowBlocks uses your browser's local storage (localStorage) to save certain preferences and settings, such as:</p>
@@ -551,14 +565,15 @@
         <li>Whether you have accepted the Terms of Use.</li>
         <li>Whether you have chosen to hide the welcome message.</li>
       </ul>
-      <p>- This data is stored only on your device and can be deleted by clearing your browser's cache or site data.</p>
+      <p>- This data is stored only on your device and can be deleted by clearing your browser's cache or using the "Clear Application Cache" button below.</p>
+      <p>- For California residents (CCPA), localStorage data is considered technical data and is not sold or shared.</p>
       
       <h4>1.3. Automatically Collected Data</h4>
       <p>- We <strong>do not collect</strong> data about your interactions with the application, such as usage statistics, IP addresses, or browser details.</p>
       <p>- No cookies or similar tracking technologies are used by ReadFlowBlocks.</p>
       
-      <h4>1.4. Third-Party Libraries</h4>
-      <p>ReadFlowBlocks relies on third-party libraries to process files in various formats. These libraries are loaded via Content Delivery Networks (CDNs), which may collect technical data (e.g., IP addresses) according to their own privacy policies. We do not control these processes but recommend reviewing the privacy policies of the following libraries and services:</p>
+      <h4>1.4. Third-Party Data Processing</h4>
+      <p>ReadFlowBlocks relies on third-party libraries to process files in various formats. These libraries are loaded via Content Delivery Networks (CDNs), which may collect technical data (e.g., IP addresses, browser type) to deliver content, as per their privacy policies. This processing is necessary for the app's functionality (GDPR Art. 6(1)(b)). We do not control their data practices but ensure they comply with applicable laws. Please review the privacy policies of the following services:</p>
       <ul>
         <li><a href="https://mozilla.github.io/pdf.js/">pdf.js</a> (for PDF processing)</li>
         <li><a href="https://github.com/mwilliamson/mammoth.js">mammoth.js</a> (for DOCX processing)</li>
@@ -575,15 +590,14 @@
       
       <h3>3. Data Storage and Deletion</h3>
       <p>- <strong>Temporary storage</strong>: Data from uploaded files is stored in your device's memory only during your session and is automatically cleared when you close the application or refresh the page.</p>
-      <p>- <strong>Local storage</strong>: Preferences and settings saved in localStorage persist until you manually delete them via your browser settings (e.g., by clearing cache or site data).</p>
+      <p>- <strong>Local storage</strong>: Preferences and settings saved in localStorage persist until you manually delete them via your browser settings or the "Clear Application Cache" button below.</p>
       <p>- We <strong>do not store any of your data</strong> on our servers or in cloud storage.</p>
-      <p>- You can clear all application-related data stored in localStorage by clicking the button below.</p>
       
       <h3>4. Data Security</h3>
       <p>We strive to ensure a secure user experience, but as ReadFlowBlocks operates within your browser, the security of your data also depends on your device and browser. To enhance security, we recommend:</p>
       <ul>
         <li>Using an up-to-date browser with the latest security patches.</li>
-        <li>Avoiding uploads of files containing sensitive or personal information if you are concerned about your device's security.</li>
+        <li>Avoiding uploads of files containing sensitive or personal information.</li>
         <li>Running the application through a local server (e.g., using <code>python -m http.server</code>) to avoid CORS restrictions and enhance file loading reliability.</li>
       </ul>
       
@@ -592,7 +606,7 @@
       <ul>
         <li><strong>Right to be informed</strong>: This Privacy Policy outlines what data is collected and how it is used.</li>
         <li><strong>Right to access</strong>: You can view data stored in localStorage via your browser's developer tools (F12 → Application → Local Storage).</li>
-        <li><strong>Right to erasure</strong>: You can delete localStorage data by clearing your browser's cache or site data, or by using the "Clear Application Cache" button below.</li>
+        <li><strong>Right to erasure</strong>: You can delete localStorage data by clearing your browser's cache or using the "Clear Application Cache" button below. To exercise GDPR data deletion rights, use this button or contact us.</li>
         <li><strong>Right to object</strong>: Since no data is collected or shared, there is no processing to object to.</li>
         <li><strong>Right to lodge a complaint</strong>: You may contact us or a supervisory authority if you have concerns about our privacy practices.</li>
       </ul>
@@ -618,7 +632,7 @@
       <p>This Privacy Policy is governed by the laws of the jurisdiction in which the developer operates. Any disputes arising from this policy will be resolved in accordance with applicable laws.</p>
       
       <div style="display: flex; justify-content: center;">
-        <button class="modal-button" id="clearCacheButton">Clear Application Cache</button>
+        <button class="modal-button" id="clearCacheButton" aria-label="Clear Application Cache">Clear Application Cache</button>
       </div>
     </div>
   </div>
@@ -740,8 +754,8 @@
         .map((w, i) => {
           const globalIndex = renderStart + i;
           return globalIndex >= blockStart && globalIndex < blockEnd
-            ? `<span class="highlight" data-index="${globalIndex}">${w}</span>`
-            : `<span data-index="${globalIndex}">${w}</span>`;
+            ? `<span class="highlight" data-index="${globalIndex}" role="text">${w}</span>`
+            : `<span data-index="${globalIndex}" role="text">${w}</span>`;
         })
         .join(" ");
 
@@ -801,6 +815,7 @@
     function togglePause() {
       isPaused = !isPaused;
       pauseButton.textContent = isPaused ? "Continue" : "Pause";
+      pauseButton.setAttribute("aria-label", isPaused ? "Continue Reading" : "Pause Reading");
       if (!isPaused) startReading();
       else clearInterval(interval);
     }
@@ -810,6 +825,7 @@
       current = 0;
       isPaused = false;
       pauseButton.textContent = "Pause";
+      pauseButton.setAttribute("aria-label", "Pause Reading");
       pauseButton.disabled = false;
       updateDisplay();
       startReading();
@@ -909,6 +925,11 @@
         );
         return;
       }
+
+      // Предупреждение о легальности и конфиденциальности
+      alert(
+        "Ensure you have the legal right to use this file and that it does not contain sensitive or personal information, as it will be processed locally on your device."
+      );
 
       const ext = file.name.split(".").pop().toLowerCase();
       let text = "";
@@ -1119,6 +1140,8 @@
       if (modal) {
         modal.classList.add('show');
         modal.style.display = "flex";
+        const modalContent = modal.querySelector('.modal-content');
+        modalContent.focus();
         console.log(`Modal ${modalId} shown successfully`);
       } else {
         console.error(`Modal with ID ${modalId} not found`);
@@ -1185,6 +1208,13 @@
         }
       }
     }
+
+    // Закрытие модальных окон по Esc
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        ["termsModal", "welcomeModal", "aboutModal", "privacyModal"].forEach(closeModal);
+      }
+    });
 
     // Привязка обработчиков после загрузки DOM
     document.addEventListener("DOMContentLoaded", () => {
