@@ -1,6 +1,16 @@
-Hello everyone. I didn't think about this project for long. The idea came to me when I was scrolling through TikTok. I decided to turn it all into a living idea.
-I didn't write it entirely myself. GPT did this work.
-Thank you user for reading this message I hope this code will make reading your favorite book much more interesting, exciting and faster.
-Good luck!
+# ReadFlowBlocks
+A web application for reading text files (.txt, .pdf, .docx, .html, .epub, .rtf) with customizable speed and navigation.
 
-To open this project, simply download the HTML file and open it on your phone or computer, download the book and enjoy.
+## Features
+- Local file processing (no server uploads).
+- Adjustable reading speed and word count.
+- Chapter navigation for EPUB files.
+- Hosted on Netlify.
+
+## License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Contact
+Maksym Didukh
+Email: didukh.maxim@gmail.com
+GitHub: https://github.com/MaksDidukh
