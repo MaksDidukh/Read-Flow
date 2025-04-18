@@ -20,27 +20,27 @@
       color: white;
       display: flex;
       flex-direction: column;
-      min-height: 100vh; /* Use min-height instead of height */
-      overflow: auto; /* Allow scrolling if content overflows */
+      min-height: 100vh;
+      overflow: auto;
     }
 
     header {
       text-align: center;
       padding: 1rem;
-      font-size: clamp(1rem, 2.5vw, 1.5rem); /* Scalable font size */
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
       font-weight: bold;
       background: rgba(0, 0, 0, 0.1);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap; /* Wrap buttons on small screens */
+      flex-wrap: wrap;
     }
 
     main {
       flex: 1;
       display: flex;
       flex-direction: column;
-      padding: clamp(0.5rem, 2vw, 1rem); /* Adaptive padding */
+      padding: clamp(0.5rem, 2vw, 1rem);
       gap: clamp(0.5rem, 1.5vw, 1rem);
       overflow: hidden;
     }
@@ -49,10 +49,50 @@
       color: white;
       font-size: clamp(0.8rem, 2vw, 1rem);
       margin-bottom: 0.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 5px;
+      padding: clamp(0.3rem, 1vw, 0.5rem) clamp(0.5rem, 1.5vw, 0.8rem);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      display: inline-block;
+      width: auto;
+    }
+
+    input[type="file"]::-webkit-file-upload-button {
+      background: #2ed3b7;
+      color: black;
+      border: none;
+      border-radius: 5px;
+      padding: clamp(0.3rem, 1vw, 0.5rem) clamp(0.5rem, 1.5vw, 0.8rem);
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    input[type="file"]::-webkit-file-upload-button:hover {
+      transform: scale(1.05);
+    }
+
+    input[type="file"]:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    input[type="file"]::-moz-focus-inner {
+      border: 0;
+    }
+
+    input[type="file"]::after {
+      content: attr(data-file-text);
+      color: white;
+      font-size: clamp(0.8rem, 2vw, 1rem);
+      margin-left: 0.5rem;
+      vertical-align: middle;
     }
 
     #fullText {
-      height: 500px; /* Increased fixed height for larger size */
+      height: 500px;
       overflow-y: auto;
       padding: clamp(0.5rem, 2vw, 1rem);
       background: rgba(255, 255, 255, 0.08);
@@ -65,13 +105,12 @@
 
     #wordBox {
       text-align: center;
-      font-size: clamp(1.2rem, 5vw, 2rem); /* Scalable font size */
+      font-size: clamp(1.2rem, 5vw, 2rem);
       font-weight: bold;
       padding: clamp(0.5rem, 3vw, 1.5rem);
       background: rgba(0, 0, 0, 0.1);
       border-radius: 10px;
       min-height: 70px;
-      /* transition: all 0.3s ease; */
     }
 
     .highlight {
@@ -101,7 +140,7 @@
       width: 100%;
       accent-color: #2ed3b7;
       height: 4px;
-      touch-action: pan-y; /* Improves scrolling on touch devices */
+      touch-action: pan-y;
     }
 
     #pageIndicator {
@@ -134,8 +173,8 @@
       cursor: pointer;
       transition: transform 0.2s ease;
       font-size: clamp(0.8rem, 2vw, 1rem);
-      margin: 0.2rem; /* Margins for touch devices */
-      min-width: 80px; /* Minimum button width */
+      margin: 0.2rem;
+      min-width: 80px;
     }
 
     #pauseButton:hover,
@@ -175,7 +214,7 @@
       display: flex;
       align-items: center;
       gap: clamp(0.5rem, 1.5vw, 1rem);
-      flex-wrap: wrap; /* Wrap elements on small screens */
+      flex-wrap: wrap;
     }
 
     #chapterSelect {
@@ -198,9 +237,6 @@
       }
     }
 
-    /* Media queries for responsiveness */
-
-    /* Mobile devices (up to 768px) */
     @media (max-width: 768px) {
       header {
         flex-direction: column;
@@ -215,13 +251,13 @@
       }
 
       #fullText {
-        font-size: 0.9rem; /* Smaller font for better readability */
+        font-size: 0.9rem;
         line-height: 1.4;
-        height: 300px; /* Increased fixed height for mobile */
+        height: 300px;
       }
 
       #wordBox {
-        font-size: 1.5rem; /* Smaller font */
+        font-size: 1.5rem;
         padding: 0.5rem;
       }
 
@@ -234,7 +270,7 @@
       }
 
       input[type="range"] {
-        height: 6px; /* Larger for touch usability */
+        height: 6px;
       }
 
       #pauseButton,
@@ -257,11 +293,10 @@
 
       #chapterSelect {
         width: 100%;
-        font-size: 0.9rem;
+        font-size:  Alvarado0.9rem;
       }
     }
 
-    /* Tablets (768px–1024px) */
     @media (min-width: 769px) and (max-width: 1024px) {
       header {
         padding: 0.8rem;
@@ -271,7 +306,7 @@
       #fullText {
         font-size: 0.95rem;
         padding: 0.8rem;
-        height: 400px; /* Increased fixed height for tablets */
+        height: 400px;
       }
 
       #wordBox {
@@ -295,11 +330,6 @@
         font-size: 0.95rem;
       }
     }
-
-    /* Desktops (1024px and above) */
-    @media (min-width: 1025px) {
-      /* Styles remain as is, suitable for large screens */
-    }
   </style>
 </head>
 <body>
@@ -314,7 +344,7 @@
   </header>
 
   <main>
-    <input type="file" id="fileInput" accept=".txt,.pdf,.docx,.html,.epub,.rtf">
+    <input type="file" id="fileInput" accept=".txt,.pdf,.docx,.html,.epub,.rtf" data-file-text="No file chosen">
     <div id="loadingIndicator" style="display: none;">Loading...</div>
     <div id="navigation">
       <input type="range" id="navigationSlider" min="0" max="100" value="0">
@@ -409,6 +439,13 @@
     const renderWindow = 100;
     const bufferThreshold = 500;
     let chapters = [];
+
+    // Update file input text
+    function updateFileInputText() {
+      const fileInput = document.getElementById("fileInput");
+      const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : "No file chosen";
+      fileInput.setAttribute("data-file-text", fileName);
+    }
 
     // Update text display
     function updateDisplay() {
@@ -766,6 +803,7 @@
 
     // Event listeners
     document.getElementById("fileInput").addEventListener("change", (e) => {
+      updateFileInputText();
       const file = e.target.files[0];
       handleFile(file);
     });
@@ -817,6 +855,9 @@
         }
       }
     });
+
+    // Initialize file input text
+    updateFileInputText();
   </script>
 </body>
 </html>
