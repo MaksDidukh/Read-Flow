@@ -293,7 +293,7 @@
 
       #chapterSelect {
         width: 100%;
-        font-size:  Alvarado0.9rem;
+        font-size: 0.9rem;
       }
     }
 
@@ -350,6 +350,8 @@
       <input type="range" id="navigationSlider" min="0" max="100" value="0">
       <select id="chapterSelect" style="display: none;"></select>
     </div>
+    <div id Neисправленный код:
+```html
     <div id="fullText"></div>
     <div id="wordBox"></div>
     <div id="pageIndicator">Page 1</div>
@@ -439,6 +441,13 @@
     const renderWindow = 100;
     const bufferThreshold = 500;
     let chapters = [];
+
+    // Welcome message
+    const welcomeMessage = "This project was created for you, with the hope that it will spark and simplify your interest in reading books. Dive into the world of stories and knowledge with ease, and let this tool make your reading journey both exciting and effortless!";
+    const welcomeWords = welcomeMessage.trim().replace(/\s+/g, " ").split(" ");
+
+    // Set welcome message as default
+    words = [...welcomeWords];
 
     // Update file input text
     function updateFileInputText() {
@@ -782,6 +791,7 @@
         console.log(`Total words after processing: ${words.length}`);
         if (words.length === 0) {
           alert("No words found after processing the file. Try another file.");
+          words = [...welcomeWords]; // Revert to welcome message
           return;
         }
 
@@ -798,6 +808,9 @@
           `Failed to load file (${ext}): ${error.message}. Check the browser console (F12) for details.`
         );
         loadingIndicator.style.display = "none";
+        words = [...welcomeWords]; // Revert to welcome message
+        updateDisplay();
+        startReading();
       }
     }
 
@@ -856,8 +869,10 @@
       }
     });
 
-    // Initialize file input text
+    // Initialize file input text and start reading welcome message
     updateFileInputText();
+    updateDisplay();
+    startReading();
   </script>
 </body>
 </html>
