@@ -13,7 +13,6 @@
     * {
       box-sizing: border-box;
     }
-
     body {
       margin: 0;
       font-family: sans-serif;
@@ -24,7 +23,6 @@
       min-height: 100vh;
       overflow: auto;
     }
-
     header {
       text-align: center;
       padding: 1rem;
@@ -36,7 +34,6 @@
       align-items: center;
       flex-wrap: wrap;
     }
-
     main {
       flex: 1;
       display: flex;
@@ -45,7 +42,12 @@
       gap: clamp(0.5rem, 1.5vw, 1rem);
       overflow: hidden;
     }
-
+    footer {
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.1);
+      text-align: center;
+      font-size: clamp(0.8rem, 2vw, 1rem);
+    }
     input[type="file"] {
       color: white;
       font-size: clamp(0.8rem, 2vw, 1rem);
@@ -60,7 +62,6 @@
       display: inline-block;
       width: auto;
     }
-
     input[type="file"]::-webkit-file-upload-button {
       background: #2ed3b7;
       color: black;
@@ -71,19 +72,15 @@
       cursor: pointer;
       transition: transform 0.2s ease;
     }
-
     input[type="file"]::-webkit-file-upload-button:hover {
       transform: scale(1.05);
     }
-
     input[type="file"]:hover {
       background: rgba(255, 255, 255, 0.2);
     }
-
     input[type="file"]::-moz-focus-inner {
       border: 0;
     }
-
     input[type="file"]::after {
       content: attr(data-file-text);
       color: white;
@@ -91,7 +88,6 @@
       margin-left: 0.5rem;
       vertical-align: middle;
     }
-
     #fullText {
       height: 500px;
       overflow-y: auto;
@@ -103,7 +99,6 @@
       cursor: pointer;
       position: relative;
     }
-
     #wordBox {
       text-align: center;
       font-size: clamp(1.2rem, 5vw, 2rem);
@@ -113,7 +108,6 @@
       border-radius: 10px;
       min-height: 70px;
     }
-
     .highlight {
       background: #2ed3b7;
       border-radius: 6px;
@@ -121,46 +115,38 @@
       color: black;
       transition: transform 0.2s ease;
     }
-
     .highlight.clicked {
       transform: scale(1.1);
     }
-
     .controls {
       display: flex;
       flex-direction: column;
       gap: clamp(0.3rem, 1vw, 0.6rem);
     }
-
     label {
       font-size: clamp(0.6rem, 1.5vw, 0.8rem);
       margin-bottom: 2px;
     }
-
     input[type="range"] {
       width: 100%;
       accent-color: #2ed3b7;
       height: 4px;
       touch-action: pan-y;
     }
-
     #pageIndicator {
       text-align: center;
       font-size: clamp(0.7rem, 1.5vw, 0.9rem);
       opacity: 0.8;
     }
-
     #loadingIndicator {
       text-align: center;
       font-size: clamp(0.7rem, 1.5vw, 0.9rem);
       color: #2ed3b7;
       opacity: 0.8;
     }
-
     .bottom {
       padding-bottom: clamp(0.5rem, 2vw, 1rem);
     }
-
     #pauseButton,
     #restartButton,
     #rewindBack,
@@ -177,14 +163,12 @@
       margin: 0.2rem;
       min-width: 80px;
     }
-
     #pauseButton:hover,
     #restartButton:hover,
     #rewindBack:hover,
     #rewindForward:hover {
       transform: scale(1.05);
     }
-
     #progress {
       font-size: clamp(0.7rem, 1.5vw, 0.9rem);
       opacity: 0.8;
@@ -195,13 +179,11 @@
       border-radius: 10px;
       overflow: hidden;
     }
-
     #progressBar {
       height: 100%;
       background: #2ed3b7;
       transition: width 0.3s ease;
     }
-
     #progressText {
       position: absolute;
       top: 0;
@@ -210,14 +192,12 @@
       line-height: 20px;
       font-size: clamp(0.7rem, 1.5vw, 0.9rem);
     }
-
     #navigation {
       display: flex;
       align-items: center;
       gap: clamp(0.5rem, 1.5vw, 1rem);
       flex-wrap: wrap;
     }
-
     #chapterSelect {
       padding: clamp(0.3rem, 1vw, 0.5rem);
       background: rgba(255, 255, 255, 0.1);
@@ -226,7 +206,88 @@
       border-radius: 5px;
       font-size: clamp(0.8rem, 2vw, 1rem);
     }
-
+    /* Стили для модального окна */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: clamp(1rem, 2vw, 2rem);
+      max-width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      color: white;
+      font-size: clamp(0.9rem, 2vw, 1.1rem);
+      line-height: 1.6;
+      position: relative;
+    }
+    .modal-content h2 {
+      font-size: clamp(1.2rem, 3vw, 1.5rem);
+      margin-bottom: 1rem;
+    }
+    .modal-content a {
+      color: #2ed3b7;
+      text-decoration: none;
+    }
+    .modal-content a:hover {
+      text-decoration: underline;
+    }
+    .modal-content ul {
+      margin: 1rem 0;
+      padding-left: 1.5rem;
+    }
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: #2ed3b7;
+      border: none;
+      border-radius: 5px;
+      padding: 0.5rem 1rem;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .modal-close:hover {
+      transform: scale(1.05);
+    }
+    .modal-button {
+      background: #2ed3b7;
+      border: none;
+      border-radius: 5px;
+      padding: 0.5rem 1rem;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 0.5rem;
+      transition: transform 0.2s ease;
+    }
+    .modal-button:hover {
+      transform: scale(1.05);
+    }
+    .footer-link {
+      background: none;
+      border: none;
+      color: white;
+      font-size: clamp(0.8rem, 2vw, 1rem);
+      cursor: pointer;
+      margin: 0 0.5rem;
+      transition: color 0.3s ease;
+    }
+    .footer-link:hover {
+      color: #2ed3b7;
+    }
     @keyframes pulse {
       from {
         opacity: 0.7;
@@ -237,43 +298,35 @@
         transform: translateY(0);
       }
     }
-
     @media (max-width: 768px) {
       header {
         flex-direction: column;
         gap: 0.5rem;
       }
-
       header > div {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
         gap: 0.5rem;
       }
-
       #fullText {
         font-size: 0.9rem;
         line-height: 1.4;
         height: 300px;
       }
-
       #wordBox {
         font-size: 1.5rem;
         padding: 0.5rem;
       }
-
       .controls {
         gap: 0.3rem;
       }
-
       label {
         font-size: 0.7rem;
       }
-
       input[type="range"] {
         height: 6px;
       }
-
       #pauseButton,
       #restartButton,
       #rewindBack,
@@ -282,39 +335,39 @@
         font-size: 0.9rem;
         min-width: 70px;
       }
-
       #navigation {
         flex-direction: column;
         gap: 0.5rem;
       }
-
       #navigationSlider {
         width: 100%;
       }
-
       #chapterSelect {
         width: 100%;
         font-size: 0.9rem;
       }
+      .modal-content {
+        font-size: 0.85rem;
+        padding: 1rem;
+      }
+      .modal-content h2 {
+        font-size: 1.2rem;
+      }
     }
-
     @media (min-width: 769px) and (max-width: 1024px) {
       header {
         padding: 0.8rem;
         font-size: 1.2rem;
       }
-
       #fullText {
         font-size: 0.95rem;
         padding: 0.8rem;
         height: 400px;
       }
-
       #wordBox {
         font-size: 1.8rem;
         padding: 1rem;
       }
-
       #pauseButton,
       #restartButton,
       #rewindBack,
@@ -322,11 +375,9 @@
         padding: 0.6rem 1rem;
         font-size: 0.95rem;
       }
-
       #navigation {
         gap: 0.8rem;
       }
-
       #chapterSelect {
         font-size: 0.95rem;
       }
@@ -343,7 +394,6 @@
       <button id="rewindForward">Forward 10%</button>
     </div>
   </header>
-
   <main>
     <input type="file" id="fileInput" accept=".txt,.pdf,.docx,.html,.epub,.rtf" data-file-text="No file chosen">
     <div id="loadingIndicator" style="display: none;">Loading...</div>
@@ -351,8 +401,6 @@
       <input type="range" id="navigationSlider" min="0" max="100" value="0">
       <select id="chapterSelect" style="display: none;"></select>
     </div>
-    <div id Neисправленный код:
-```html
     <div id="fullText"></div>
     <div id="wordBox"></div>
     <div id="pageIndicator">Page 1</div>
@@ -372,7 +420,99 @@
       <input type="range" id="wordCountSlider" min="3" max="15" step="1" value="3">
     </div>
   </main>
-
+  <footer>
+    <button class="footer-link" onclick="showModal('about')">About</button>
+    <button class="footer-link" onclick="showModal('privacy')">Privacy Policy</button>
+  </footer>
+  <!-- Модальное окно для приветствия -->
+  <div id="welcomeModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('welcomeModal')">Close</button>
+      <h2>Welcome to ReadFlowBlocks</h2>
+      <p>ReadFlowBlocks processes all your files locally in your browser, ensuring your data stays private. No data is sent to our servers.</p>
+      <p>Learn more about our <a href="#" onclick="showModal('privacy'); closeModal('welcomeModal')">Privacy Policy</a>.</p>
+      <label><input type="checkbox" id="dontShowAgain"> Don't show again</label>
+      <div>
+        <button class="modal-button" onclick="closeModal('welcomeModal')">OK</button>
+      </div>
+    </div>
+  </div>
+  <!-- Модальное окно для About -->
+  <div id="aboutModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('aboutModal')">Close</button>
+      <h2>About ReadFlowBlocks</h2>
+      <p>ReadFlowBlocks is an innovative web application designed to simplify and enhance your reading experience. Upload books in .txt, .pdf, .docx, .html, .epub, or .rtf formats and enjoy reading with customizable speed, word count, and chapter navigation.</p>
+      <h3>Key Features</h3>
+      <ul>
+        <li>Support for multiple file formats (.txt, .pdf, .docx, .html, .epub, .rtf).</li>
+        <li>Adjustable reading speed and auto-acceleration.</li>
+        <li>Interactive text and chapter navigation.</li>
+        <li>Progress tracking and text size customization.</li>
+        <li>Simple and intuitive interface.</li>
+      </ul>
+      <h3>Developer</h3>
+      <p><strong>Name</strong>: Maksym Didukh</p>
+      <p><strong>Email</strong>: didukh.maxim@gmail.com</p>
+      <p><strong>GitHub</strong>: <a href="https://github.com/MaksDidukh">github.com/MaksDidukh</a></p>
+    </div>
+  </div>
+  <!-- Модальное окно для Privacy Policy -->
+  <div id="privacyModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('privacyModal')">Close</button>
+      <h2>Privacy Policy</h2>
+      <p><strong>Effective Date</strong>: April 18, 2025</p>
+      <p>We, Maksym Didukh, the developer of ReadFlowBlocks, are committed to protecting your privacy and ensuring the security of your data. This Privacy Policy explains how we collect, use, store, and protect information related to your use of our application.</p>
+      <h3>1. Information Collection</h3>
+      <p>ReadFlowBlocks operates locally in your browser. We <strong>do not collect or store personal data</strong> on our servers, except as described below.</p>
+      <h4>1.1. User-Uploaded Data</h4>
+      <p>- You may upload files in .txt, .pdf, .docx, .html, .epub, or .rtf formats for processing. These files are processed solely in your browser and <strong>are not transmitted to our servers</strong>.</p>
+      <p>- The content of uploaded files is temporarily stored in your device's memory for display and is cleared when you close the application or clear your browser cache.</p>
+      <h4>1.2. Automatically Collected Data</h4>
+      <p>- We <strong>do not collect</strong> data about your interactions with the application (e.g., usage statistics, IP addresses, or browser data).</p>
+      <p>- The application uses your browser's local storage (localStorage) to save your reading progress. This data is stored only on your device and can be deleted via your browser settings.</p>
+      <h4>1.3. Third-Party Libraries</h4>
+      <p>ReadFlowBlocks uses third-party libraries (e.g., pdf.js, mammoth.js, epub.js, rtf.js) to process files. These libraries are loaded via CDNs, which may collect technical data (e.g., IP addresses) per their own privacy policies. We do not control these processes but recommend reviewing the privacy policies of:</p>
+      <ul>
+        <li><a href="https://mozilla.github.io/pdf.js/">pdf.js</a></li>
+        <li><a href="https://github.com/mwilliamson/mammoth.js">mammoth.js</a></li>
+        <li><a href="https://github.com/futurepress/epub.js">epub.js</a></li>
+        <li><a href="https://github.com/ianjones/rtf.js">rtf.js</a></li>
+        <li><a href="https://www.jsdelivr.com/terms/privacy-policy-jsdelivr-net">jsDelivr CDN</a></li>
+      </ul>
+      <h3>2. Data Usage</h3>
+      <p>- Uploaded files are used solely for processing and displaying text in the application.</p>
+      <p>- Local storage data is used to save your reading progress for continuity.</p>
+      <p>- We <strong>do not share, sell, or use your data</strong> for any other purposes, including marketing or analytics.</p>
+      <h3>3. Data Storage and Deletion</h3>
+      <p>- Data related to uploaded files is stored only in your device's memory and is cleared upon closing the application or refreshing the page.</p>
+      <p>- Local storage data persists until you manually delete it via your browser settings (e.g., clearing cache or site data).</p>
+      <p>- We <strong>do not store your data</strong> on our servers or in cloud storage.</p>
+      <h3>4. Security</h3>
+      <p>We strive to ensure the security of your interaction with the application. However, as ReadFlowBlocks runs in your browser, data security also depends on your device and browser. We recommend:</p>
+      <ul>
+        <li>Using an up-to-date browser.</li>
+        <li>Avoiding uploads of files containing sensitive information if you are unsure about your device's security.</li>
+        <li>Running the application via a local server (e.g., <code>python -m http.server</code>) to avoid CORS restrictions.</li>
+      </ul>
+      <h3>5. User Rights</h3>
+      <p>Under data protection laws (e.g., GDPR), you have the right to:</p>
+      <ul>
+        <li>Know what data is collected (as outlined in Section 1).</li>
+        <li>Delete data stored in localStorage via your browser settings.</li>
+        <li>Contact us with any privacy-related questions using the contact information below.</li>
+      </ul>
+      <h3>6. Children</h3>
+      <p>ReadFlowBlocks is not intended for use by children under 13 years old. We do not collect data from users under this age. If you believe a child under 13 has used the application, please contact us.</p>
+      <h3>7. Changes to This Privacy Policy</h3>
+      <p>We may update this Privacy Policy to reflect changes in the application or legal requirements. The updated version will be available within the application.</p>
+      <h3>8. Contact Information</h3>
+      <p>For any questions, concerns, or requests related to this Privacy Policy, please contact us:</p>
+      <p><strong>Email</strong>: didukh.maxim@gmail.com</p>
+      <p><strong>GitHub</strong>: <a href="https://github.com/MaksDidukh">github.com/MaksDidukh</a></p>
+    </div>
+  </div>
   <script type="module">
     // Check if running via file://
     if (window.location.protocol === "file:") {
@@ -867,6 +1007,31 @@
         if (!isNaN(index)) {
           startReadingFromWord(index);
         }
+      }
+    });
+
+    // Modal functions
+    function showModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.style.display = "flex";
+      }
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.style.display = "none";
+        if (modalId === "welcomeModal" && document.getElementById("dontShowAgain").checked) {
+          localStorage.setItem("hideWelcomeModal", "true");
+        }
+      }
+    }
+
+    // Show welcome modal on page load
+    window.addEventListener("load", () => {
+      if (!localStorage.getItem("hideWelcomeModal")) {
+        showModal("welcomeModal");
       }
     });
 
