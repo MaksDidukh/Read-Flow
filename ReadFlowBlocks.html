@@ -161,10 +161,7 @@
       padding-bottom: clamp(0.5rem, 2vw, 1rem);
     }
 
-    #pauseButton,
-    #restartButton,
-    #rewindBack,
-    #rewindForward {
+    #pauseButton {
       padding: clamp(0.5rem, 1.5vw, 0.8rem) clamp(0.8rem, 2vw, 1rem);
       background: #2ed3b7;
       border: none;
@@ -178,10 +175,7 @@
       min-width: 80px;
     }
 
-    #pauseButton:hover,
-    #restartButton:hover,
-    #rewindBack:hover,
-    #rewindForward:hover {
+    #pauseButton:hover {
       transform: scale(1.05);
     }
 
@@ -218,7 +212,7 @@
       flex-wrap: wrap;
     }
 
-    #chapterSelect {
+    #chapterSelect, #pageSelect {
       padding: clamp(0.3rem, 1vw, 0.5rem);
       background: rgba(255, 255, 255, 0.1);
       border: none;
@@ -274,10 +268,7 @@
         height: 6px;
       }
 
-      #pauseButton,
-      #restartButton,
-      #rewindBack,
-      #rewindForward {
+      #pauseButton {
         padding: 0.5rem 0.8rem;
         font-size: 0.9rem;
         min-width: 70px;
@@ -292,7 +283,7 @@
         width: 100%;
       }
 
-      #chapterSelect {
+      #chapterSelect, #pageSelect {
         width: 100%;
         font-size: 0.9rem;
       }
@@ -315,10 +306,7 @@
         padding: 1rem;
       }
 
-      #pauseButton,
-      #restartButton,
-      #rewindBack,
-      #rewindForward {
+      #pauseButton {
         padding: 0.6rem 1rem;
         font-size: 0.95rem;
       }
@@ -327,7 +315,7 @@
         gap: 0.8rem;
       }
 
-      #chapterSelect {
+      #chapterSelect, #pageSelect {
         font-size: 0.95rem;
       }
     }
@@ -337,10 +325,7 @@
   <header>
     <span>ReadFlowBlocks</span>
     <div>
-      <button id="rewindBack">Back 10%</button>
       <button id="pauseButton">Pause</button>
-      <button id="restartButton">Restart</button>
-      <button id="rewindForward">Forward 10%</button>
     </div>
   </header>
 
@@ -350,9 +335,8 @@
     <div id="navigation">
       <input type="range" id="navigationSlider" min="0" max="100" value="0">
       <select id="chapterSelect" style="display: none;"></select>
+      <select id="pageSelect" style="display: none;"></select>
     </div>
-    <div id Neисправленный код:
-```html
     <div id="fullText"></div>
     <div id="wordBox"></div>
     <div id="pageIndicator">Page 1</div>
@@ -362,9 +346,9 @@
     </div>
     <div class="controls bottom">
       <label for="speedSlider">Speed (words/sec):</label>
-      <input type="range" id="speedSlider" min="0.3" max="15" step="0.1" value="1.5">
+      <input type="range" id="speedSlider" min="0" max="100" step="1" value="15">
       <label for="accelSlider">Max Acceleration:</label>
-      <input type="range" id="accelSlider" min="0" max="15" step="0.1" value="0">
+      <input type="range" id="accelSlider" min="0" max="10" step="0.1" value="0">
       <label><input type="checkbox" id="autoAccel"> Auto Acceleration</label>
       <label for="sizeSlider">Text Size:</label>
       <input type="range" id="sizeSlider" min="1" max="4" step="0.1" value="2">
@@ -387,41 +371,30 @@
       pdfjsLib = await import("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.min.mjs");
       pdfjsLib.GlobalWorkerOptions.workerSrc =
         "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.worker.min.mjs";
-      console.log("pdf.js successfully loaded");
     } catch (error) {
-      console.error("Error loading pdf.js:", error);
       alert("Failed to load the pdf.js library. Check your internet connection or try again later.");
       throw error;
     }
 
     // Check library loading
     if (typeof mammoth === "undefined") {
-      console.error("mammoth.js library not loaded");
       alert("Failed to load the mammoth.js library for processing .docx files. Check your internet connection.");
-    } else {
-      console.log("mammoth.js successfully loaded");
     }
 
     if (typeof ePub === "undefined") {
-      console.error("epub.js library not loaded");
       alert("Failed to load the epub.js library for processing .epub files. Check your internet connection.");
-    } else {
-      console.log("epub.js successfully loaded");
     }
 
     if (typeof RTFJS === "undefined") {
-      console.error("rtf.js library not loaded");
       alert("Failed to load the rtf.js library for processing .rtf files. Check your internet connection.");
-    } else {
-      console.log("rtf.js successfully loaded");
     }
 
     // Initialize variables
     let words = [],
       current = 0,
-      interval,
-      isPaused = false;
-    let wordBuffer = [];
+      timeoutId = null,
+      isPaused = false,
+      currentSpeed = 1.5; // Words per second
     const wordBox = document.getElementById("wordBox");
     const fullTextDiv = document.getElementById("fullText");
     const pageIndicator = document.getElementById("pageIndicator");
@@ -429,19 +402,18 @@
     const progressText = document.getElementById("progressText");
     const loadingIndicator = document.getElementById("loadingIndicator");
     const pauseButton = document.getElementById("pauseButton");
-    const restartButton = document.getElementById("restartButton");
-    const rewindBack = document.getElementById("rewindBack");
-    const rewindForward = document.getElementById("rewindForward");
     const navigationSlider = document.getElementById("navigationSlider");
     const chapterSelect = document.getElementById("chapterSelect");
+    const pageSelect = document.getElementById("pageSelect");
     let wordCount = 3;
     let pdfDocument = null;
-    let currentPageBatch = 0;
     let totalPages = 0;
-    const pagesPerBatch = 5;
-    const renderWindow = 100;
-    const bufferThreshold = 500;
+    const renderWindow = 100; // Words before and after the current block
     let chapters = [];
+    let pageWordIndices = []; // Map pages to word indices
+    const minSpeed = 0.3;
+    const maxSpeed = 10;
+    const expFactor = 4; // Controls steepness of exponential curve
 
     // Welcome message
     const welcomeMessage = "This project was created for you, with the hope that it will spark and simplify your interest in reading books. Dive into the world of stories and knowledge with ease, and let this tool make your reading journey both exciting and effortless!";
@@ -457,22 +429,44 @@
       fileInput.setAttribute("data-file-text", fileName);
     }
 
+    // Get current page based on blockStart
+    function getCurrentPage(blockStart) {
+      for (let i = pageWordIndices.length - 1; i >= 0; i--) {
+        const { page, startIndex, wordCount } = pageWordIndices[i];
+        if (blockStart >= startIndex && blockStart < startIndex + wordCount) {
+          return page;
+        }
+      }
+      // Fallback for non-PDF or early stages
+      return Math.max(1, Math.floor(blockStart / 200) + 1);
+    }
+
+    // Get page start index
+    function getPageStartIndex(pageNumber) {
+      const pageEntry = pageWordIndices.find((entry) => entry.page === pageNumber);
+      return pageEntry ? pageEntry.startIndex : 0;
+    }
+
+    // Update page select options
+    function updatePageSelect() {
+      pageSelect.innerHTML = "";
+      if (pdfDocument && totalPages > 0) {
+        pageSelect.style.display = "block";
+        for (let i = 1; i <= totalPages; i++) {
+          const option = document.createElement("option");
+          option.value = i;
+          option.textContent = `Page ${i}`;
+          pageSelect.appendChild(option);
+        }
+      } else {
+        pageSelect.style.display = "none";
+      }
+    }
+
     // Update text display
     function updateDisplay() {
       const blockStart = current * wordCount;
       const blockEnd = blockStart + wordCount;
-
-      // Refill word buffer
-      if (words.length < bufferThreshold && wordBuffer.length > 0) {
-        const batchSize = Math.min(500, wordBuffer.length);
-        words = words.concat(wordBuffer.splice(0, batchSize));
-        console.log(`Added ${batchSize} words from buffer. Current words size: ${words.length}`);
-      }
-
-      // Load next batch for PDF
-      if (pdfDocument && blockStart >= words.length - wordCount * 5) {
-        setTimeout(loadNextBatch, 0);
-      }
 
       // Check for end of text
       if (blockStart >= words.length) {
@@ -483,21 +477,30 @@
         progressBar.style.width = "100%";
         navigationSlider.value = 100;
         localStorage.setItem("readProgress", current);
-        pauseButton.textContent = "Finished";
-        pauseButton.disabled = true;
+        clearTimeout(timeoutId); // Stop reading
+        isPaused = true; // Pause reading
+        pauseButton.textContent = "Pause"; // Keep button active
+        pauseButton.disabled = false;
         return;
       }
 
-      // Render text
+      // Get current page
+      const currentPage = getCurrentPage(blockStart);
+      const pageStartIndex = getPageStartIndex(currentPage);
+
+      // Render text with page-local indices
       const renderStart = Math.max(0, blockStart - renderWindow);
       const renderEnd = Math.min(words.length, blockEnd + renderWindow);
       const highlighted = words
         .slice(renderStart, renderEnd)
         .map((w, i) => {
           const globalIndex = renderStart + i;
-          return globalIndex >= blockStart && globalIndex < blockEnd
-            ? `<span class="highlight" data-index="${globalIndex}">${w}</span>`
-            : `<span data-index="${globalIndex}">${w}</span>`;
+          // Calculate local index relative to page start
+          const localIndex = globalIndex - pageStartIndex;
+          const isHighlighted = globalIndex >= blockStart && globalIndex < blockEnd;
+          return isHighlighted
+            ? `<span class="highlight" data-index="${localIndex}" data-global-index="${globalIndex}">${w}</span>`
+            : `<span data-index="${localIndex}" data-global-index="${globalIndex}">${w}</span>`;
         })
         .join(" ");
 
@@ -507,8 +510,9 @@
       wordBox.innerHTML = currentWords || "Nothing more to read!";
       wordBox.classList.add("next");
       setTimeout(() => wordBox.classList.remove("next"), 400);
-      pageIndicator.textContent = `Page ${Math.floor(blockStart / 200) + 1}`;
-      const progressPercent = Math.round((blockStart / words.length) * 100);
+      pageIndicator.textContent = `Page ${currentPage}`;
+      pageSelect.value = currentPage; // Update dropdown
+      const progressPercent = Math.round((blockStart / Math.max(words.length, 1)) * 100);
       progressText.textContent = `Progress: ${progressPercent}%`;
       progressBar.style.width = `${progressPercent}%`;
       navigationSlider.value = progressPercent;
@@ -527,30 +531,42 @@
       }
     }
 
-    // Start reading
+    // Calculate exponential speed from slider value
+    function calculateSpeed(sliderValue) {
+      const normalizedValue = sliderValue / 100; // 0 to 1
+      const expTerm = (Math.exp(expFactor * normalizedValue) - 1) / (Math.exp(expFactor) - 1);
+      return minSpeed + (maxSpeed - minSpeed) * expTerm;
+    }
+
+    // Start reading with dynamic speed
     function startReading() {
-      if (isPaused) return;
-      clearInterval(interval);
-      const speed = parseFloat(document.getElementById("speedSlider").value);
+      if (isPaused || current * wordCount >= words.length) return;
+
+      // Clear any existing timeout
+      clearTimeout(timeoutId);
+
+      // Get current settings
+      const baseSpeed = calculateSpeed(parseFloat(document.getElementById("speedSlider").value));
       const accelEnabled = document.getElementById("autoAccel").checked;
       const accelLimit = parseFloat(document.getElementById("accelSlider").value);
-      let currentSpeed = speed;
-      let delay = 1000 / currentSpeed;
-      interval = setInterval(() => {
+
+      // Update current speed (apply acceleration if enabled)
+      if (accelEnabled && currentSpeed < accelLimit) {
+        currentSpeed = Math.min(currentSpeed + 0.02, accelLimit);
+      } else {
+        currentSpeed = baseSpeed;
+      }
+
+      // Calculate delay (ms per block)
+      const delay = 100 / (currentSpeed / wordCount);
+
+      // Schedule next update
+      timeoutId = setTimeout(() => {
         const blockStart = current * wordCount;
         if (blockStart < words.length) {
           current++;
           updateDisplay();
-          if (accelEnabled && currentSpeed < accelLimit) {
-            currentSpeed += 0.02;
-            delay = 1000 / currentSpeed;
-            clearInterval(interval);
-            startReading();
-          }
-        } else {
-          current = Math.floor(words.length / wordCount);
-          updateDisplay();
-          clearInterval(interval);
+          startReading(); // Continue reading
         }
       }, delay);
     }
@@ -559,27 +575,23 @@
     function togglePause() {
       isPaused = !isPaused;
       pauseButton.textContent = isPaused ? "Continue" : "Pause";
-      if (!isPaused) startReading();
-      else clearInterval(interval);
-    }
-
-    // Restart reading
-    function restartReading() {
-      current = 0;
-      isPaused = false;
-      pauseButton.textContent = "Pause";
-      pauseButton.disabled = false;
-      updateDisplay();
-      startReading();
+      if (!isPaused && current * wordCount < words.length) {
+        startReading();
+      } else {
+        clearTimeout(timeoutId);
+      }
     }
 
     // Start reading from a specific word
-    function startReadingFromWord(index) {
-      if (index >= 0 && index < words.length) {
-        current = Math.floor(index / wordCount);
-        clearInterval(interval);
+    function startReadingFromWord(localIndex, pageNumber) {
+      // Convert local index to global index
+      const pageStartIndex = getPageStartIndex(pageNumber);
+      const globalIndex = pageStartIndex + localIndex;
+      if (globalIndex >= 0 && globalIndex < words.length) {
+        current = Math.floor(globalIndex / wordCount);
+        clearTimeout(timeoutId);
         updateDisplay();
-        const clickedWord = fullTextDiv.querySelector(`span[data-index="${index}"]`);
+        const clickedWord = fullTextDiv.querySelector(`span[data-global-index="${globalIndex}"]`);
         if (clickedWord) {
           clickedWord.classList.add("clicked");
           setTimeout(() => clickedWord.classList.remove("clicked"), 200);
@@ -593,64 +605,23 @@
       const totalBlocks = Math.floor(words.length / wordCount);
       current = Math.floor(totalBlocks * (percent / 100));
       current = Math.min(current, totalBlocks);
-      clearInterval(interval);
+      clearTimeout(timeoutId);
       updateDisplay();
       if (!isPaused) startReading();
     }
 
-    // Rewind backward/forward
-    function rewind(direction) {
-      const totalBlocks = Math.floor(words.length / wordCount);
-      const step = Math.floor(totalBlocks * 0.1);
-      if (direction === "back") {
-        current = Math.max(0, current - step);
-      } else {
-        current = Math.min(totalBlocks, current + step);
+    // Navigate to a specific page
+    function navigateToPage(pageNumber) {
+      pageNumber = parseInt(pageNumber);
+      if (!pdfDocument || pageNumber < 1 || pageNumber > totalPages) {
+        return;
       }
-      clearInterval(interval);
+
+      const pageStartIndex = getPageStartIndex(pageNumber);
+      current = Math.floor(pageStartIndex / wordCount);
+      clearTimeout(timeoutId);
       updateDisplay();
       if (!isPaused) startReading();
-    }
-
-    // Load next batch of PDF pages
-    async function loadNextBatch() {
-      if (!pdfDocument || currentPageBatch * pagesPerBatch >= totalPages) return;
-
-      loadingIndicator.style.display = "block";
-      const startTime = performance.now();
-      let batchText = "";
-      const startPage = currentPageBatch * pagesPerBatch + 1;
-      const endPage = Math.min(startPage + pagesPerBatch - 1, totalPages);
-
-      try {
-        console.log(`Loading pages ${startPage}-${endPage} of ${totalPages}`);
-        for (let i = startPage; i <= endPage; i++) {
-          console.log(`Processing page ${i}`);
-          const page = await pdfDocument.getPage(i);
-          const content = await page.getTextContent();
-          const pageText = content.items.map((item) => item.str).join(" ");
-          console.log(`Page ${i} text: ${pageText.slice(0, 50)}...`);
-          batchText += pageText + " ";
-        }
-
-        const newWords = batchText.trim().replace(/\s+/g, " ").split(" ");
-        console.log(`Extracted ${newWords.length} words`);
-        if (newWords.length > 0) {
-          wordBuffer = wordBuffer.concat(newWords);
-          updateDisplay();
-        }
-
-        currentPageBatch++;
-        const endTime = performance.now();
-        if (currentPageBatch * pagesPerBatch < totalPages) {
-          loadingIndicator.textContent = `Loading... (pages ${startPage}-${endPage} of ${totalPages}, time: ${(endTime - startTime).toFixed(2)} ms)`;
-        } else {
-          loadingIndicator.style.display = "none";
-        }
-      } catch (error) {
-        console.error("Error loading next batch of pages:", error);
-        loadingIndicator.textContent = `Error loading pages: ${error.message}`;
-      }
     }
 
     // Handle uploaded file
@@ -672,73 +643,66 @@
       let text = "";
       pauseButton.disabled = false;
       pauseButton.textContent = "Pause";
-      restartButton.disabled = false;
       pdfDocument = null;
-      currentPageBatch = 0;
       totalPages = 0;
       words = [];
-      wordBuffer = [];
       chapters = [];
+      pageWordIndices = [];
       chapterSelect.style.display = "none";
       chapterSelect.innerHTML = "";
+      pageSelect.style.display = "none";
+      pageSelect.innerHTML = "";
       loadingIndicator.style.display = "none";
       navigationSlider.value = 0;
 
       try {
         if (ext === "txt") {
-          console.log("Processing .txt...");
           text = await file.text();
           if (!text) throw new Error("The .txt file is empty or unreadable.");
-          console.log(`Extracted text (.txt): ${text.slice(0, 50)}...`);
         } else if (ext === "html") {
-          console.log("Processing .html...");
           const html = await file.text();
           const div = document.createElement("div");
           div.innerHTML = html;
           text = div.innerText;
           if (!text.trim()) throw new Error("The .html file contains no text.");
-          console.log(`Extracted text (.html): ${text.slice(0, 50)}...`);
         } else if (ext === "pdf") {
-          console.log("Processing .pdf...");
           if (!pdfjsLib) throw new Error("The pdf.js library is not loaded.");
           const arrayBuffer = await file.arrayBuffer();
-          console.log("Loading PDF document...");
           pdfDocument = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
           totalPages = pdfDocument.numPages;
-          console.log(`Total pages: ${totalPages}`);
           if (totalPages === 0) throw new Error("The PDF file is empty.");
 
-          let pdfText = "";
-          const endPage = Math.min(pagesPerBatch, totalPages);
+          let emptyPages = 0;
           loadingIndicator.style.display = "block";
-          const startTime = performance.now();
-          loadingIndicator.textContent = `Loading... (pages 1-${endPage} of ${totalPages})`;
+          loadingIndicator.textContent = `Loading all pages (1-${totalPages})...`;
 
-          for (let i = 1; i <= endPage; i++) {
-            console.log(`Processing page ${i}`);
+          for (let i = 1; i <= totalPages; i++) {
             const page = await pdfDocument.getPage(i);
             const content = await page.getTextContent();
             const pageText = content.items.map((item) => item.str).join(" ");
-            console.log(`Page ${i} text: ${pageText.slice(0, 50)}...`);
-            pdfText += pageText + " ";
+            const pageWords = pageText.trim().replace(/\s+/g, " ").split(" ").filter(word => word);
+            if (pageWords.length === 0) {
+              emptyPages++;
+            }
+            pageWordIndices.push({ page: i, startIndex: words.length, wordCount: pageWords.length });
+            words = words.concat(pageWords);
           }
-          const endTime = performance.now();
-          loadingIndicator.textContent = `Loading... (pages 1-${endPage} of ${totalPages}, time: ${(endTime - startTime).toFixed(2)} ms)`;
-          text = pdfText;
-          currentPageBatch = 1;
-          if (currentPageBatch * pagesPerBatch >= totalPages) {
+          if (emptyPages === totalPages) {
+            alert("The PDF contains no extractable text. Try another file.");
+            words = [...welcomeWords];
             loadingIndicator.style.display = "none";
+            updatePageSelect();
+            return;
           }
+          loadingIndicator.style.display = "none";
+          updatePageSelect();
         } else if (ext === "docx") {
-          console.log("Processing .docx...");
           if (typeof mammoth === "undefined") throw new Error("The mammoth.js library is not loaded.");
           const arrayBuffer = await file.arrayBuffer();
           const result = await mammoth.extractRawText({ arrayBuffer });
           text = result.value;
           if (!text.trim()) throw new Error("The .docx file is empty or text could not be extracted.");
-          console.log(`Extracted text (.docx): ${text.slice(0, 50)}...`);
         } else if (ext === "epub") {
-          console.log("Processing .epub...");
           if (typeof ePub === "undefined") throw new Error("The epub.js library is not loaded.");
           const arrayBuffer = await file.arrayBuffer();
           const book = ePub(arrayBuffer);
@@ -771,16 +735,13 @@
           }
           text = epubText;
           if (!text.trim()) throw new Error("The .epub file is empty or text could not be extracted.");
-          console.log(`Extracted text (.epub): ${text.slice(0, 50)}...`);
         } else if (ext === "rtf") {
-          console.log("Processing .rtf...");
           if (typeof RTFJS === "undefined") throw new Error("The rtf.js library is not loaded.");
           const arrayBuffer = await file.arrayBuffer();
           const rtfContent = new TextDecoder().decode(arrayBuffer);
           const rtf = new RTFJS.Document(rtfContent);
           text = rtf.getText();
           if (!text.trim()) throw new Error("The .rtf file is empty or text could not be extracted.");
-          console.log(`Extracted text (.rtf): ${text.slice(0, 50)}...`);
         } else {
           alert(
             "This format is not supported! Supported formats: .txt, .pdf, .docx, .html, .epub, .rtf."
@@ -788,11 +749,13 @@
           return;
         }
 
-        words = text.trim().replace(/\s+/g, " ").split(" ");
-        console.log(`Total words after processing: ${words.length}`);
+        if (ext !== "pdf") {
+          words = text.trim().replace(/\s+/g, " ").split(" ");
+        }
         if (words.length === 0) {
           alert("No words found after processing the file. Try another file.");
-          words = [...welcomeWords]; // Revert to welcome message
+          words = [...welcomeWords];
+          updatePageSelect();
           return;
         }
 
@@ -804,12 +767,12 @@
         updateDisplay();
         startReading();
       } catch (error) {
-        console.error(`Error processing file (${ext}):`, error);
         alert(
           `Failed to load file (${ext}): ${error.message}. Check the browser console (F12) for details.`
         );
         loadingIndicator.style.display = "none";
-        words = [...welcomeWords]; // Revert to welcome message
+        words = [...welcomeWords];
+        updatePageSelect();
         updateDisplay();
         startReading();
       }
@@ -822,7 +785,8 @@
       handleFile(file);
     });
 
-    document.getElementById("speedSlider").addEventListener("input", () => {
+    document.getElementById("speedSlider").addEventListener("input", (e) => {
+      currentSpeed = calculateSpeed(parseFloat(e.target.value));
       if (!isPaused) startReading();
     });
 
@@ -839,9 +803,6 @@
     });
 
     pauseButton.addEventListener("click", togglePause);
-    restartButton.addEventListener("click", restartReading);
-    rewindBack.addEventListener("click", () => rewind("back"));
-    rewindForward.addEventListener("click", () => rewind("forward"));
 
     navigationSlider.addEventListener("input", (e) => {
       const percent = parseInt(e.target.value);
@@ -855,23 +816,31 @@
         const totalBlocks = Math.floor(words.length / wordCount);
         const blockIndex = Math.floor(chapter.startIndex / wordCount);
         current = blockIndex;
-        clearInterval(interval);
+        clearTimeout(timeoutId);
         updateDisplay();
         if (!isPaused) startReading();
       }
     });
 
+    pageSelect.addEventListener("change", (e) => {
+      const pageNumber = parseInt(e.target.value);
+      navigateToPage(pageNumber);
+    });
+
     fullTextDiv.addEventListener("click", (e) => {
       if (e.target.tagName === "SPAN") {
-        const index = parseInt(e.target.getAttribute("data-index"));
-        if (!isNaN(index)) {
-          startReadingFromWord(index);
+        const localIndex = parseInt(e.target.getAttribute("data-index"));
+        const globalIndex = parseInt(e.target.getAttribute("data-global-index"));
+        const currentPage = getCurrentPage(current * wordCount);
+        if (!isNaN(localIndex) && !isNaN(globalIndex)) {
+          startReadingFromWord(localIndex, currentPage);
         }
       }
     });
 
     // Initialize file input text and start reading welcome message
     updateFileInputText();
+    updatePageSelect();
     updateDisplay();
     startReading();
   </script>
