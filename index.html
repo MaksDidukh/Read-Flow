@@ -207,7 +207,6 @@
       border-radius: 5px;
       font-size: clamp(0.8rem, 2vw, 1rem);
     }
-    /* Стили для модальных окон */
     .modal {
       display: none;
       position: fixed;
@@ -300,14 +299,12 @@
     .footer-link:hover {
       color: #2ed3b7;
     }
-    /* Стили для блокировки интерфейса */
     .locked main,
     .locked header,
     .locked footer {
       pointer-events: none;
       opacity: 0.5;
     }
-    /* Стили для сообщения о CORS */
     #corsWarning {
       text-align: center;
       font-size: clamp(0.7rem, 1.5vw, 0.9rem);
@@ -315,7 +312,6 @@
       margin-bottom: 0.5rem;
       display: none;
     }
-    /* Анимации */
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
@@ -704,8 +700,9 @@
     let totalPages = 0;
     const pagesPerBatch = 5;
     const renderWindow = 100;
-    const bufferThreshold = 500;
+    const bufferThreshold = 1000;
     let chapters = [];
+    let isLoadingBatch = false;
 
     // Приветственное сообщение
     const welcomeMessage = "This project was created for you, with the hope that it will spark and simplify your interest in reading books. Dive into the world of stories and knowledge with ease, and let this tool make your reading journey both exciting and effortless!";
@@ -724,14 +721,22 @@
       const blockStart = current * wordCount;
       const blockEnd = blockStart + wordCount;
 
+      // Перенос слов из wordBuffer в words, если буфер мал
       if (words.length < bufferThreshold && wordBuffer.length > 0) {
-        const batchSize = Math.min(500, wordBuffer.length);
+        const batchSize = Math.min(1000, wordBuffer.length);
         words = words.concat(wordBuffer.splice(0, batchSize));
-        console.log(`Added ${batchSize} words from buffer. Current words size: ${words.length}`);
+        console.log(`Transferred ${batchSize} words from buffer to words. Total words: ${words.length}`);
       }
 
-      if (pdfDocument && blockStart >= words.length - wordCount * 5) {
-        setTimeout(loadNextBatch, 0);
+      // Подгрузка следующей партии страниц для PDF
+      if (
+        pdfDocument &&
+        blockStart >= words.length - bufferThreshold &&
+        currentPageBatch * pagesPerBatch < totalPages &&
+        !isLoadingBatch
+      ) {
+        console.log("Triggering loadNextBatch due to low word count");
+        loadNextBatch();
       }
 
       if (blockStart >= words.length) {
@@ -872,8 +877,12 @@
 
     // Загрузка следующей партии страниц PDF
     async function loadNextBatch() {
-      if (!pdfDocument || currentPageBatch * pagesPerBatch >= totalPages) return;
+      if (!pdfDocument || currentPageBatch * pagesPerBatch >= totalPages || isLoadingBatch) {
+        console.log("loadNextBatch skipped: no document, all pages loaded, or already loading");
+        return;
+      }
 
+      isLoadingBatch = true;
       loadingIndicator.style.display = "block";
       const startTime = performance.now();
       let batchText = "";
@@ -882,32 +891,52 @@
 
       try {
         console.log(`Loading pages ${startPage}-${endPage} of ${totalPages}`);
+        loadingIndicator.textContent = `Loading pages ${startPage}-${endPage} of ${totalPages}...`;
         for (let i = startPage; i <= endPage; i++) {
           console.log(`Processing page ${i}`);
           const page = await pdfDocument.getPage(i);
           const content = await page.getTextContent();
           const pageText = content.items.map((item) => item.str).join(" ");
-          console.log(`Page ${i} text: ${pageText.slice(0, 50)}...`);
+          console.log(`Page ${i} text (first 50 chars): ${pageText.slice(0, 50)}...`);
           batchText += pageText + " ";
         }
 
         const newWords = batchText.trim().replace(/\s+/g, " ").split(" ");
-        console.log(`Extracted ${newWords.length} words`);
+        console.log(`Extracted ${newWords.length} words from pages ${startPage}-${endPage}`);
         if (newWords.length > 0) {
           wordBuffer = wordBuffer.concat(newWords);
-          updateDisplay();
+          console.log(`Added ${newWords.length} words to wordBuffer. Buffer size: ${wordBuffer.length}`);
+          // Перенос слов в words, если они нужны немедленно
+          if (words.length < bufferThreshold) {
+            const batchSize = Math.min(1000, wordBuffer.length);
+            words = words.concat(wordBuffer.splice(0, batchSize));
+            console.log(`Transferred ${batchSize} words to words. Total words: ${words.length}`);
+            updateDisplay();
+          }
+        } else {
+          console.warn(`No words extracted from pages ${startPage}-${endPage}`);
         }
 
         currentPageBatch++;
         const endTime = performance.now();
-        if (currentPageBatch * pagesPerBatch < totalPages) {
-          loadingIndicator.textContent = `Loading... (pages ${startPage}-${endPage} of ${totalPages}, time: ${(endTime - startTime).toFixed(2)} ms)`;
-        } else {
-          loadingIndicator.style.display = "none";
-        }
+        console.log(`Loaded pages ${startPage}-${endPage} in ${(endTime - startTime).toFixed(2)} ms`);
+        loadingIndicator.textContent = `Loaded pages ${startPage}-${endPage} of ${totalPages} (${(endTime - startTime).toFixed(2)} ms)`;
+        setTimeout(() => {
+          if (currentPageBatch * pagesPerBatch >= totalPages) {
+            loadingIndicator.style.display = "none";
+            console.log("All pages loaded");
+          } else {
+            loadingIndicator.style.display = "none";
+          }
+        }, 1000);
       } catch (error) {
         console.error("Error loading next batch of pages:", error);
-        loadingIndicator.textContent = `Error loading pages: ${error.message}`;
+        loadingIndicator.textContent = `Error loading pages ${startPage}-${endPage}: ${error.message}`;
+        setTimeout(() => {
+          loadingIndicator.style.display = "none";
+        }, 3000);
+      } finally {
+        isLoadingBatch = false;
       }
     }
 
@@ -975,23 +1004,24 @@
           const endPage = Math.min(pagesPerBatch, totalPages);
           loadingIndicator.style.display = "block";
           const startTime = performance.now();
-          loadingIndicator.textContent = `Loading... (pages 1-${endPage} of ${totalPages})`;
+          loadingIndicator.textContent = `Loading pages 1-${endPage} of ${totalPages}...`;
 
           for (let i = 1; i <= endPage; i++) {
             console.log(`Processing page ${i}`);
             const page = await pdfDocument.getPage(i);
             const content = await page.getTextContent();
             const pageText = content.items.map((item) => item.str).join(" ");
-            console.log(`Page ${i} text: ${pageText.slice(0, 50)}...`);
+            console.log(`Page ${i} text (first 50 chars): ${pageText.slice(0, 50)}...`);
             pdfText += pageText + " ";
           }
           const endTime = performance.now();
-          loadingIndicator.textContent = `Loading... (pages 1-${endPage} of ${totalPages}, time: ${(endTime - startTime).toFixed(2)} ms)`;
+          console.log(`Loaded pages 1-${endPage} in ${(endTime - startTime).toFixed(2)} ms`);
+          loadingIndicator.textContent = `Loaded pages 1-${endPage} of ${totalPages} (${(endTime - startTime).toFixed(2)} ms)`;
+          setTimeout(() => {
+            loadingIndicator.style.display = "none";
+          }, 1000);
           text = pdfText;
           currentPageBatch = 1;
-          if (currentPageBatch * pagesPerBatch >= totalPages) {
-            loadingIndicator.style.display = "none";
-          }
         } else if (ext === "docx") {
           console.log("Processing .docx...");
           if (typeof mammoth === "undefined") throw new Error("The mammoth.js library is not loaded.");
