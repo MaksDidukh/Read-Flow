@@ -422,7 +422,7 @@
     <span>ReadFlowBlocks <img src="https://raw.githubusercontent.com/MaksDidukh/ReadFlowBlocks/refs/heads/main/ReadFlowBlockImageFinal-removebg108_108.png" alt="ReadFlowBlocks Icon" style="width: 1.5rem; height: 1.5rem; vertical-align: middle;"></span>
     <div>
       <button id="rewindBack" aria-label="Rewind Back 10%">Back 10%</button>
-      <button id="pauseButton" aria-label="Pause Reading">Pause</button>
+      <button id divergences="pauseButton" aria-label="Pause Reading">Pause</button>
       <button id="restartButton" aria-label="Restart Reading">Restart</button>
       <button id="rewindForward" aria-label="Rewind Forward 10%">Forward 10%</button>
     </div>
@@ -698,9 +698,9 @@
     let pdfDocument = null;
     let currentPageBatch = 0;
     let totalPages = 0;
-    const pagesPerBatch = 5;
+    const pagesPerBatch = 10; // Увеличено до 10 для 250 страниц
     const renderWindow = 100;
-    const bufferThreshold = 1000;
+    const bufferThreshold = 500; // Уменьшено до 500 для частой подгрузки
     let chapters = [];
     let isLoadingBatch = false;
 
@@ -731,11 +731,11 @@
       // Подгрузка следующей партии страниц для PDF
       if (
         pdfDocument &&
-        blockStart >= words.length - bufferThreshold &&
+        words.length < bufferThreshold &&
         currentPageBatch * pagesPerBatch < totalPages &&
         !isLoadingBatch
       ) {
-        console.log("Triggering loadNextBatch due to low word count");
+        console.log(`Triggering loadNextBatch: words=${words.length}, currentPageBatch=${currentPageBatch}, totalPages=${totalPages}`);
         loadNextBatch();
       }
 
@@ -747,8 +747,8 @@
         progressBar.style.width = "100%";
         navigationSlider.value = 100;
         localStorage.setItem("readProgress", current);
-        pauseButton.textContent = "Finished";
-        pauseButton.disabled = true;
+        pauseButton.textContent = "Continue"; // Кнопка активна
+        clearInterval(interval);
         return;
       }
 
@@ -821,8 +821,17 @@
       isPaused = !isPaused;
       pauseButton.textContent = isPaused ? "Continue" : "Pause";
       pauseButton.setAttribute("aria-label", isPaused ? "Continue Reading" : "Pause Reading");
-      if (!isPaused) startReading();
-      else clearInterval(interval);
+      if (!isPaused) {
+        const blockStart = current * wordCount;
+        if (blockStart >= words.length) {
+          // Если чтение завершено, начинаем с текущей позиции
+          restartReading();
+        } else {
+          startReading();
+        }
+      } else {
+        clearInterval(interval);
+      }
     }
 
     // Перезапуск чтения
@@ -831,7 +840,6 @@
       isPaused = false;
       pauseButton.textContent = "Pause";
       pauseButton.setAttribute("aria-label", "Pause Reading");
-      pauseButton.disabled = false;
       updateDisplay();
       startReading();
     }
@@ -878,7 +886,7 @@
     // Загрузка следующей партии страниц PDF
     async function loadNextBatch() {
       if (!pdfDocument || currentPageBatch * pagesPerBatch >= totalPages || isLoadingBatch) {
-        console.log("loadNextBatch skipped: no document, all pages loaded, or already loading");
+        console.log(`loadNextBatch skipped: pdfDocument=${!!pdfDocument}, currentPageBatch=${currentPageBatch}, totalPages=${totalPages}, isLoadingBatch=${isLoadingBatch}`);
         return;
       }
 
@@ -888,10 +896,11 @@
       let batchText = "";
       const startPage = currentPageBatch * pagesPerBatch + 1;
       const endPage = Math.min(startPage + pagesPerBatch - 1, totalPages);
+      const progressPercent = Math.round((endPage / totalPages) * 100);
 
       try {
-        console.log(`Loading pages ${startPage}-${endPage} of ${totalPages}`);
-        loadingIndicator.textContent = `Loading pages ${startPage}-${endPage} of ${totalPages}...`;
+        console.log(`Loading pages ${startPage}-${endPage} of ${totalPages} (${progressPercent}%)`);
+        loadingIndicator.textContent = `Loading pages ${startPage}-${endPage} of ${totalPages} (${progressPercent}%)...`;
         for (let i = startPage; i <= endPage; i++) {
           console.log(`Processing page ${i}`);
           const page = await pdfDocument.getPage(i);
@@ -914,13 +923,13 @@
             updateDisplay();
           }
         } else {
-          console.warn(`No words extracted from pages ${startPage}-${endPage}`);
+          console.warn(`No words extracted from pages ${startPage}-${endPage}, skipping to next batch`);
         }
 
         currentPageBatch++;
         const endTime = performance.now();
         console.log(`Loaded pages ${startPage}-${endPage} in ${(endTime - startTime).toFixed(2)} ms`);
-        loadingIndicator.textContent = `Loaded pages ${startPage}-${endPage} of ${totalPages} (${(endTime - startTime).toFixed(2)} ms)`;
+        loadingIndicator.textContent = `Loaded pages ${startPage}-${endPage} of ${totalPages} (${progressPercent}%)`;
         setTimeout(() => {
           if (currentPageBatch * pagesPerBatch >= totalPages) {
             loadingIndicator.style.display = "none";
@@ -930,8 +939,9 @@
           }
         }, 1000);
       } catch (error) {
-        console.error("Error loading next batch of pages:", error);
+        console.error(`Error loading pages ${startPage}-${endPage}:`, error);
         loadingIndicator.textContent = `Error loading pages ${startPage}-${endPage}: ${error.message}`;
+        currentPageBatch++; // Продолжаем с следующей партией
         setTimeout(() => {
           loadingIndicator.style.display = "none";
         }, 3000);
@@ -947,7 +957,7 @@
         return;
       }
 
-      const maxSizeMB = 50;
+      const maxSizeMB = 100; // Увеличено до 100 МБ
       if (file.size > maxSizeMB * 1024 * 1024) {
         alert(
           `File is too large (${(file.size / (1024 * 1024)).toFixed(2)} MB). Maximum size: ${maxSizeMB} MB.`
@@ -962,7 +972,6 @@
 
       const ext = file.name.split(".").pop().toLowerCase();
       let text = "";
-      pauseButton.disabled = false;
       pauseButton.textContent = "Pause";
       restartButton.disabled = false;
       pdfDocument = null;
@@ -1016,7 +1025,7 @@
           }
           const endTime = performance.now();
           console.log(`Loaded pages 1-${endPage} in ${(endTime - startTime).toFixed(2)} ms`);
-          loadingIndicator.textContent = `Loaded pages 1-${endPage} of ${totalPages} (${(endTime - startTime).toFixed(2)} ms)`;
+          loadingIndicator.textContent = `Loaded pages 1-${endPage} of ${totalPages} (${Math.round((endPage / totalPages) * 100)}%)`;
           setTimeout(() => {
             loadingIndicator.style.display = "none";
           }, 1000);
