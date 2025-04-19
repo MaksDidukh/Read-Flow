@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/MaksDidukh/ReadFlowBlocks/refs/heads/main/icon_108x108.ico">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="ReadFlowBlocks: A web app for reading text files with customizable speed and navigation.">
-  <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/MaksDidukh/ReadFlowBlocks/refs/heads/main/ReadFlowBlockImageFinal-removebg108_108.png">
   <title>ReadFlowBlocks</title>
   <script src="https://unpkg.com/mammoth@1.8.0/mammoth.browser.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
@@ -14,6 +13,7 @@
     * {
       box-sizing: border-box;
     }
+
     body {
       margin: 0;
       font-family: sans-serif;
@@ -24,6 +24,7 @@
       min-height: 100vh;
       overflow: auto;
     }
+
     header {
       text-align: center;
       padding: 1rem;
@@ -35,6 +36,7 @@
       align-items: center;
       flex-wrap: wrap;
     }
+
     main {
       flex: 1;
       display: flex;
@@ -43,12 +45,7 @@
       gap: clamp(0.5rem, 1.5vw, 1rem);
       overflow: hidden;
     }
-    footer {
-      padding: 1rem;
-      background: rgba(0, 0, 0, 0.1);
-      text-align: center;
-      font-size: clamp(0.8rem, 2vw, 1rem);
-    }
+
     input[type="file"] {
       color: white;
       font-size: clamp(0.8rem, 2vw, 1rem);
@@ -59,7 +56,11 @@
       padding: clamp(0.3rem, 1vw, 0.5rem) clamp(0.5rem, 1.5vw, 0.8rem);
       cursor: pointer;
       transition: all 0.3s ease;
+      position: relative;
+      display: inline-block;
+      width: auto;
     }
+
     input[type="file"]::-webkit-file-upload-button {
       background: #2ed3b7;
       color: black;
@@ -70,12 +71,19 @@
       cursor: pointer;
       transition: transform 0.2s ease;
     }
+
     input[type="file"]::-webkit-file-upload-button:hover {
       transform: scale(1.05);
     }
+
     input[type="file"]:hover {
       background: rgba(255, 255, 255, 0.2);
     }
+
+    input[type="file"]::-moz-focus-inner {
+      border: 0;
+    }
+
     input[type="file"]::after {
       content: attr(data-file-text);
       color: white;
@@ -83,6 +91,7 @@
       margin-left: 0.5rem;
       vertical-align: middle;
     }
+
     #fullText {
       height: 500px;
       overflow-y: auto;
@@ -92,7 +101,9 @@
       font-size: clamp(0.8rem, 2.5vw, 1rem);
       line-height: 1.6;
       cursor: pointer;
+      position: relative;
     }
+
     #wordBox {
       text-align: center;
       font-size: clamp(1.2rem, 5vw, 2rem);
@@ -102,6 +113,7 @@
       border-radius: 10px;
       min-height: 70px;
     }
+
     .highlight {
       background: #2ed3b7;
       border-radius: 6px;
@@ -109,60 +121,64 @@
       color: black;
       transition: transform 0.2s ease;
     }
+
     .highlight.clicked {
       transform: scale(1.1);
     }
+
     .controls {
       display: flex;
       flex-direction: column;
       gap: clamp(0.3rem, 1vw, 0.6rem);
     }
+
     label {
       font-size: clamp(0.6rem, 1.5vw, 0.8rem);
       margin-bottom: 2px;
     }
+
     input[type="range"] {
       width: 100%;
       accent-color: #2ed3b7;
       height: 4px;
+      touch-action: pan-y;
     }
+
     #pageIndicator {
       text-align: center;
       font-size: clamp(0.7rem, 1.5vw, 0.9rem);
       opacity: 0.8;
     }
+
     #loadingIndicator {
       text-align: center;
       font-size: clamp(0.7rem, 1.5vw, 0.9rem);
       color: #2ed3b7;
       opacity: 0.8;
     }
+
     .bottom {
       padding-bottom: clamp(0.5rem, 2vw, 1rem);
     }
-    #pauseButton,
-    #restartButton,
-    #rewindBack,
-    #rewindForward {
+
+    #pauseButton {
       padding: clamp(0.5rem, 1.5vw, 0.8rem) clamp(0.8rem, 2vw, 1rem);
-      background: #2ed3b7 !important;
+      background: #2ed3b7;
       border: none;
       border-radius: 5px;
-      color: black !important;
+      color: black;
       font-weight: bold;
       cursor: pointer;
-      transition: transform 0.2s ease, background 0.3s ease;
+      transition: transform 0.2s ease;
       font-size: clamp(0.8rem, 2vw, 1rem);
       margin: 0.2rem;
       min-width: 80px;
     }
-    #pauseButton:hover,
-    #restartButton:hover,
-    #rewindBack:hover,
-    #rewindForward:hover {
+
+    #pauseButton:hover {
       transform: scale(1.05);
-      background: #26b8a0 !important;
     }
+
     #progress {
       font-size: clamp(0.7rem, 1.5vw, 0.9rem);
       opacity: 0.8;
@@ -173,11 +189,13 @@
       border-radius: 10px;
       overflow: hidden;
     }
+
     #progressBar {
       height: 100%;
       background: #2ed3b7;
       transition: width 0.3s ease;
     }
+
     #progressText {
       position: absolute;
       top: 0;
@@ -186,13 +204,15 @@
       line-height: 20px;
       font-size: clamp(0.7rem, 1.5vw, 0.9rem);
     }
+
     #navigation {
       display: flex;
       align-items: center;
       gap: clamp(0.5rem, 1.5vw, 1rem);
       flex-wrap: wrap;
     }
-    #chapterSelect {
+
+    #chapterSelect, #pageSelect {
       padding: clamp(0.3rem, 1vw, 0.5rem);
       background: rgba(255, 255, 255, 0.1);
       border: none;
@@ -200,263 +220,181 @@
       border-radius: 5px;
       font-size: clamp(0.8rem, 2vw, 1rem);
     }
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
+
+    @keyframes pulse {
+      from {
+        opacity: 0.7;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-    .modal.show {
-      display: flex;
-    }
-    .modal-content {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      padding: clamp(1rem, 2vw, 2rem);
-      max-width: 90%;
-      max-height: 80vh;
-      overflow-y: auto;
-      color: white;
-      font-size: clamp(0.9rem, 2vw, 1.1rem);
-      line-height: 1.6;
-    }
-    .modal-content h2 {
-      font-size: clamp(1.2rem, 3vw, 1.5rem);
-      margin-bottom: 1rem;
-    }
-    .modal-content a {
-      color: #2ed3b7;
-      text-decoration: none;
-    }
-    .modal-content a:hover {
-      text-decoration: underline;
-    }
-    .modal-content ul {
-      margin: 1rem 0;
-      padding-left: 1.5rem;
-    }
-    .modal-close {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: #2ed3b7;
-      border: none;
-      border-radius: 5px;
-      padding: 0.5rem 1rem;
-      color: black;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .modal-close:hover {
-      transform: scale(1.05);
-    }
-    .modal-button {
-      background: #2ed3b7;
-      border: none;
-      border-radius: 5px;
-      padding: 0.5rem 1rem;
-      color: black;
-      font-weight: bold;
-      cursor: pointer;
-      margin: 0.5rem;
-    }
-    .modal-button.decline {
-      background: #ff4d4d;
-    }
-    .modal-button:hover {
-      transform: scale(1.05);
-    }
-    .footer-link {
-      background: none;
-      border: none;
-      color: white;
-      font-size: clamp(0.8rem, 2vw, 1rem);
-      cursor: pointer;
-      margin: 0 0.5rem;
-    }
-    .footer-link:hover {
-      color: #2ed3b7;
-    }
-    .locked main,
-    .locked header,
-    .locked footer {
-      pointer-events: none;
-      opacity: 0.5;
-    }
-    #corsWarning {
-      text-align: center;
-      font-size: clamp(0.7rem, 1.5vw, 0.9rem);
-      color: #ff4d4d;
-      margin-bottom: 0.5rem;
-      display: none;
-    }
+
     @media (max-width: 768px) {
       header {
         flex-direction: column;
         gap: 0.5rem;
       }
+
       header > div {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
         gap: 0.5rem;
       }
+
       #fullText {
         font-size: 0.9rem;
+        line-height: 1.4;
         height: 300px;
       }
+
       #wordBox {
         font-size: 1.5rem;
         padding: 0.5rem;
       }
-      #pauseButton,
-      #restartButton,
-      #rewindBack,
-      #rewindForward {
+
+      .controls {
+        gap: 0.3rem;
+      }
+
+      label {
+        font-size: 0.7rem;
+      }
+
+      input[type="range"] {
+        height: 6px;
+      }
+
+      #pauseButton {
         padding: 0.5rem 0.8rem;
         font-size: 0.9rem;
         min-width: 70px;
       }
+
       #navigation {
         flex-direction: column;
         gap: 0.5rem;
       }
-      .modal-content {
-        font-size: 0.85rem;
-        padding: 1rem;
+
+      #navigationSlider {
+        width: 100%;
+      }
+
+      #chapterSelect, #pageSelect {
+        width: 100%;
+        font-size: 0.9rem;
       }
     }
+
     @media (min-width: 769px) and (max-width: 1024px) {
+      header {
+        padding: 0.8rem;
+        font-size: 1.2rem;
+      }
+
       #fullText {
         font-size: 0.95rem;
+        padding: 0.8rem;
         height: 400px;
       }
+
       #wordBox {
         font-size: 1.8rem;
         padding: 1rem;
+      }
+
+      #pauseButton {
+        padding: 0.6rem 1rem;
+        font-size: 0.95rem;
+      }
+
+      #navigation {
+        gap: 0.8rem;
+      }
+
+      #chapterSelect, #pageSelect {
+        font-size: 0.95rem;
       }
     }
   </style>
 </head>
 <body>
   <header>
-    <span>ReadFlowBlocks <img src="https://raw.githubusercontent.com/MaksDidukh/ReadFlowBlocks/refs/heads/main/ReadFlowBlockImageFinal-removebg108_108.png" alt="ReadFlowBlocks Icon" style="width: 1.5rem; height: 1.5rem; vertical-align: middle;"></span>
+    <span>ReadFlowBlocks</span>
     <div>
-      <button id="rewindBack" aria-label="Rewind Back 10%">Back 10%</button>
-      <button id="pauseButton" aria-label="Pause Reading">Pause</button>
-      <button id="restartButton" aria-label="Restart Reading">Restart</button>
-      <button id="rewindForward" aria-label="Rewind Forward 10%">Forward 10%</button>
+      <button id="pauseButton">Pause</button>
     </div>
   </header>
+
   <main>
-    <div id="corsWarning">Note: For best experience, run this app via a local server (e.g., 'python -m http.server') or host it online.</div>
-    <input type="file" id="fileInput" accept=".txt,.pdf,.docx,.html,.epub,.rtf" data-file-text="No file chosen" aria-label="Upload a text file">
+    <input type="file" id="fileInput" accept=".txt,.pdf,.docx,.html,.epub,.rtf" data-file-text="No file chosen">
     <div id="loadingIndicator" style="display: none;">Loading...</div>
     <div id="navigation">
-      <input type="range" id="navigationSlider" min="0" max="100" value="0" aria-label="Navigate reading progress">
-      <select id="chapterSelect" style="display: none;" aria-label="Select chapter"></select>
+      <input type="range" id="navigationSlider" min="0" max="100" value="0">
+      <select id="chapterSelect" style="display: none;"></select>
+      <select id="pageSelect" style="display: none;"></select>
     </div>
-    <div id="fullText" role="region" aria-label="Full text display"></div>
-    <div id="wordBox" role="region" aria-label="Current word display"></div>
-    <div id="pageIndicator" aria-live="polite">Page 1</div>
-    <div id="progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+    <div id="fullText"></div>
+    <div id="wordBox"></div>
+    <div id="pageIndicator">Page 1</div>
+    <div id="progress">
       <div id="progressBar" style="width: 0%;"></div>
-      <span id="progressText" aria-live="polite">Progress: 0%</span>
+      <span id="progressText">Progress: 0%</span>
     </div>
     <div class="controls bottom">
       <label for="speedSlider">Speed (words/sec):</label>
-      <input type="range" id="speedSlider" min="0.3" max="15" step="0.1" value="1.5" aria-label="Adjust reading speed">
+      <input type="range" id="speedSlider" min="0" max="100" step="1" value="15">
       <label for="accelSlider">Max Acceleration:</label>
-      <input type="range" id="accelSlider" min="0" max="15" step="0.1" value="0" aria-label="Adjust maximum acceleration">
-      <label><input type="checkbox" id="autoAccel" aria-label="Enable auto acceleration"> Auto Acceleration</label>
+      <input type="range" id="accelSlider" min="0" max="10" step="0.1" value="0">
+      <label><input type="checkbox" id="autoAccel"> Auto Acceleration</label>
       <label for="sizeSlider">Text Size:</label>
-      <input type="range" id="sizeSlider" min="1" max="4" step="0.1" value="2" aria-label="Adjust text size">
+      <input type="range" id="sizeSlider" min="1" max="4" step="0.1" value="2">
       <label for="wordCountSlider">Number of Words:</label>
-      <input type="range" id="wordCountSlider" min="3" max="15" step="1" value="3" aria-label="Adjust number of words displayed">
+      <input type="range" id="wordCountSlider" min="3" max="15" step="1" value="3">
     </div>
   </main>
-  <footer>
-    <button class="footer-link" onclick="showModal('aboutModal')" aria-label="View About">About</button>
-    <button class="footer-link" onclick="showModal('privacyModal')" aria-label="View Privacy Policy">Privacy Policy</button>
-    <span>Hosted on <a href="https://www.netlify.com" target="_blank" style="color: #2ed3b7;">Netlify</a></span>
-  </footer>
-  <div id="termsModal" class="modal" role="dialog" aria-labelledby="termsModalTitle">
-    <div class="modal-content">
-      <h2 id="termsModalTitle">Terms of Use</h2>
-      <p><strong>Effective Date</strong>: April 18, 2025</p>
-      <p>Welcome to ReadFlowBlocks. By using this application, you agree to the following Terms of Use.</p>
-      <h3>1. Acceptance of Terms</h3>
-      <p>By accessing or using ReadFlowBlocks, you agree to be bound by these Terms of Use and our Privacy Policy.</p>
-      <h3>2. Use of the Application</h3>
-      <p>- For personal, non-commercial use.</p>
-      <p>- You are responsible for ensuring that uploaded files comply with intellectual property rights.</p>
-      <h3>3. Local Processing</h3>
-      <p>- All files are processed locally in your browser. No data is transmitted to our servers.</p>
-      <h3>4. Intellectual Property</h3>
-      <p>- ReadFlowBlocks is the intellectual property of Maksym Didukh.</p>
-      <h3>5. Limitation of Liability</h3>
-      <p>- Provided "as is" without warranties.</p>
-      <h3>6. Contact Information</h3>
-      <p>Email: <a href="mailto:didukh.maxim@gmail.com">didukh.maxim@gmail.com</a></p>
-      <div style="display: flex; justify-content: center; gap: 1rem;">
-        <button class="modal-button" id="acceptTermsButton" aria-label="Accept Terms">Accept</button>
-        <button class="modal-button decline" id="declineTermsButton" aria-label="Decline Terms">Decline</button>
-      </div>
-    </div>
-  </div>
-  <div id="welcomeModal" class="modal" role="dialog" aria-labelledby="welcomeModalTitle">
-    <div class="modal-content">
-      <button class="modal-close" onclick="closeModal('welcomeModal')" aria-label="Close Welcome Modal">Close</button>
-      <h2 id="welcomeModalTitle">Welcome to ReadFlowBlocks</h2>
-      <p>Files are processed locally, ensuring privacy.</p>
-      <label><input type="checkbox" id="dontShowAgain" aria-label="Do not show again"> Don't show again</label>
-      <button class="modal-button" onclick="closeModal('welcomeModal')" aria-label="Close Welcome Modal">OK</button>
-    </div>
-  </div>
-  <div id="aboutModal" class="modal" role="dialog" aria-labelledby="aboutModalTitle">
-    <div class="modal-content">
-      <button class="modal-close" onclick="closeModal('aboutModal')" aria-label="Close About Modal">Close</button>
-      <h2 id="aboutModalTitle">About ReadFlowBlocks</h2>
-      <p>ReadFlowBlocks enhances your reading experience with customizable speed and navigation.</p>
-      <p>Developer: Maksym Didukh</p>
-    </div>
-  </div>
-  <div id="privacyModal" class="modal" role="dialog" aria-labelledby="privacyModalTitle">
-    <div class="modal-content">
-      <button class="modal-close" onclick="closeModal('privacyModal')" aria-label="Close Privacy Modal">Close</button>
-      <h2 id="privacyModalTitle">Privacy Policy</h2>
-      <p><strong>Effective Date</strong>: April 18, 2025</p>
-      <p>No data is collected or stored on our servers.</p>
-      <button class="modal-button" id="clearCacheButton" aria-label="Clear Cache">Clear Application Cache</button>
-    </div>
-  </div>
-  <script>
+
+  <script type="module">
+    // Check if running via file://
     if (window.location.protocol === "file:") {
-      document.getElementById("corsWarning").style.display = "block";
+      alert(
+        "Please run the application through a local server (e.g., using VS Code Live Server or the command 'python -m http.server 8000'), otherwise file loading may not work due to CORS restrictions."
+      );
     }
 
+    // Load pdf.js
     let pdfjsLib;
-    import("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.min.mjs")
-      .then(module => {
-        pdfjsLib = module;
-        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.worker.min.mjs";
-      })
-      .catch(error => {
-        console.error("Error loading pdf.js:", error);
-        alert("Failed to load pdf.js. Check your connection.");
-      });
+    try {
+      pdfjsLib = await import("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.min.mjs");
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.worker.min.mjs";
+    } catch (error) {
+      alert("Failed to load the pdf.js library. Check your internet connection or try again later.");
+      throw error;
+    }
 
+    // Check library loading
+    if (typeof mammoth === "undefined") {
+      alert("Failed to load the mammoth.js library for processing .docx files. Check your internet connection.");
+    }
+
+    if (typeof ePub === "undefined") {
+      alert("Failed to load the epub.js library for processing .epub files. Check your internet connection.");
+    }
+
+    if (typeof RTFJS === "undefined") {
+      alert("Failed to load the rtf.js library for processing .rtf files. Check your internet connection.");
+    }
+
+    // Initialize variables
     let words = [],
       current = 0,
-      interval,
-      isPaused = false;
-    let wordBuffer = [];
+      timeoutId = null,
+      isPaused = false,
+      currentSpeed = 1.5; // Words per second
     const wordBox = document.getElementById("wordBox");
     const fullTextDiv = document.getElementById("fullText");
     const pageIndicator = document.getElementById("pageIndicator");
@@ -464,376 +402,445 @@
     const progressText = document.getElementById("progressText");
     const loadingIndicator = document.getElementById("loadingIndicator");
     const pauseButton = document.getElementById("pauseButton");
-    const restartButton = document.getElementById("restartButton");
-    const rewindBack = document.getElementById("rewindBack");
-    const rewindForward = document.getElementById("rewindForward");
     const navigationSlider = document.getElementById("navigationSlider");
     const chapterSelect = document.getElementById("chapterSelect");
+    const pageSelect = document.getElementById("pageSelect");
     let wordCount = 3;
     let pdfDocument = null;
-    let currentPageBatch = 0;
     let totalPages = 0;
-    const pagesPerBatch = 20;
-    const renderWindow = 100;
+    const renderWindow = 100; // Words before and after the current block
     let chapters = [];
-    let isLoadingBatch = false;
+    let pageWordIndices = []; // Map pages to word indices
+    const minSpeed = 0.3;
+    const maxSpeed = 10;
+    const expFactor = 4; // Controls steepness of exponential curve
 
-    const welcomeMessage = "This project was created to simplify your reading experience!";
-    words = welcomeMessage.trim().replace(/\s+/g, " ").split(" ");
+    // Welcome message
+    const welcomeMessage = "This project was created for you, with the hope that it will spark and simplify your interest in reading books. Dive into the world of stories and knowledge with ease, and let this tool make your reading journey both exciting and effortless!";
+    const welcomeWords = welcomeMessage.trim().replace(/\s+/g, " ").split(" ");
 
+    // Set welcome message as default
+    words = [...welcomeWords];
+
+    // Update file input text
     function updateFileInputText() {
       const fileInput = document.getElementById("fileInput");
-      fileInput.setAttribute("data-file-text", fileInput.files.length > 0 ? fileInput.files[0].name : "No file chosen");
+      const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : "No file chosen";
+      fileInput.setAttribute("data-file-text", fileName);
     }
 
+    // Get current page based on blockStart
+    function getCurrentPage(blockStart) {
+      for (let i = pageWordIndices.length - 1; i >= 0; i--) {
+        const { page, startIndex, wordCount } = pageWordIndices[i];
+        if (blockStart >= startIndex && blockStart < startIndex + wordCount) {
+          return page;
+        }
+      }
+      // Fallback for non-PDF or early stages
+      return Math.max(1, Math.floor(blockStart / 200) + 1);
+    }
+
+    // Get page start index
+    function getPageStartIndex(pageNumber) {
+      const pageEntry = pageWordIndices.find((entry) => entry.page === pageNumber);
+      return pageEntry ? pageEntry.startIndex : 0;
+    }
+
+    // Update page select options
+    function updatePageSelect() {
+      pageSelect.innerHTML = "";
+      if (pdfDocument && totalPages > 0) {
+        pageSelect.style.display = "block";
+        for (let i = 1; i <= totalPages; i++) {
+          const option = document.createElement("option");
+          option.value = i;
+          option.textContent = `Page ${i}`;
+          pageSelect.appendChild(option);
+        }
+      } else {
+        pageSelect.style.display = "none";
+      }
+    }
+
+    // Update text display
     function updateDisplay() {
       const blockStart = current * wordCount;
       const blockEnd = blockStart + wordCount;
 
-      if (pdfDocument && currentPageBatch * pagesPerBatch < totalPages && !isLoadingBatch) {
-        loadNextBatch();
-      }
-
-      if (blockStart >= words.length && wordBuffer.length === 0 && currentPageBatch * pagesPerBatch >= totalPages) {
-        wordBox.innerHTML = "Finished!";
+      // Check for end of text
+      if (blockStart >= words.length) {
+        wordBox.innerHTML = "";
         fullTextDiv.innerHTML = words.join(" ");
         pageIndicator.textContent = "End";
         progressText.textContent = "Progress: 100%";
         progressBar.style.width = "100%";
         navigationSlider.value = 100;
-        pauseButton.textContent = "Continue";
-        clearInterval(interval);
+        localStorage.setItem("readProgress", current);
+        clearTimeout(timeoutId); // Stop reading
+        isPaused = true; // Pause reading
+        pauseButton.textContent = "Pause"; // Keep button active
+        pauseButton.disabled = false;
         return;
       }
 
-      if (words.length < 1000 && wordBuffer.length > 0) {
-        words = words.concat(wordBuffer.splice(0, wordBuffer.length));
-        console.log(`Moved ${words.length} words from buffer. Total: ${words.length}`);
-      }
+      // Get current page
+      const currentPage = getCurrentPage(blockStart);
+      const pageStartIndex = getPageStartIndex(currentPage);
 
+      // Render text with page-local indices
       const renderStart = Math.max(0, blockStart - renderWindow);
       const renderEnd = Math.min(words.length, blockEnd + renderWindow);
       const highlighted = words
         .slice(renderStart, renderEnd)
         .map((w, i) => {
-          const idx = renderStart + i;
-          return idx >= blockStart && idx < blockEnd
-            ? `<span class="highlight" data-index="${idx}">${w}</span>`
-            : `<span data-index="${idx}">${w}</span>`;
+          const globalIndex = renderStart + i;
+          // Calculate local index relative to page start
+          const localIndex = globalIndex - pageStartIndex;
+          const isHighlighted = globalIndex >= blockStart && globalIndex < blockEnd;
+          return isHighlighted
+            ? `<span class="highlight" data-index="${localIndex}" data-global-index="${globalIndex}">${w}</span>`
+            : `<span data-index="${localIndex}" data-global-index="${globalIndex}">${w}</span>`;
         })
         .join(" ");
 
-      wordBox.innerHTML = words.slice(blockStart, blockEnd).join(" ") || "Loading...";
+      const currentWords = words.slice(blockStart, blockEnd).join(" ");
+
       fullTextDiv.innerHTML = highlighted;
-      pageIndicator.textContent = `Page ${Math.floor(blockStart / 200) + 1}`;
-      const progressPercent = Math.min(100, Math.round((blockStart / words.length) * 100));
+      wordBox.innerHTML = currentWords || "Nothing more to read!";
+      wordBox.classList.add("next");
+      setTimeout(() => wordBox.classList.remove("next"), 400);
+      pageIndicator.textContent = `Page ${currentPage}`;
+      pageSelect.value = currentPage; // Update dropdown
+      const progressPercent = Math.round((blockStart / Math.max(words.length, 1)) * 100);
       progressText.textContent = `Progress: ${progressPercent}%`;
       progressBar.style.width = `${progressPercent}%`;
       navigationSlider.value = progressPercent;
 
+      // Scroll to highlighted text
       const highlightedSpan = fullTextDiv.querySelector(".highlight");
       if (highlightedSpan) {
         const containerHeight = fullTextDiv.clientHeight;
+        const spanHeight = highlightedSpan.offsetHeight;
         const spanTop = highlightedSpan.offsetTop;
-        fullTextDiv.scrollTo({ top: spanTop - containerHeight / 2, behavior: "smooth" });
+        const scrollPosition = spanTop - containerHeight / 2 + spanHeight / 2;
+        fullTextDiv.scrollTo({
+          top: scrollPosition,
+          behavior: "smooth",
+        });
       }
     }
 
+    // Calculate exponential speed from slider value
+    function calculateSpeed(sliderValue) {
+      const normalizedValue = sliderValue / 100; // 0 to 1
+      const expTerm = (Math.exp(expFactor * normalizedValue) - 1) / (Math.exp(expFactor) - 1);
+      return minSpeed + (maxSpeed - minSpeed) * expTerm;
+    }
+
+    // Start reading with dynamic speed
     function startReading() {
-      if (isPaused) return;
-      clearInterval(interval);
-      const speed = parseFloat(document.getElementById("speedSlider").value);
+      if (isPaused || current * wordCount >= words.length) return;
+
+      // Clear any existing timeout
+      clearTimeout(timeoutId);
+
+      // Get current settings
+      const baseSpeed = calculateSpeed(parseFloat(document.getElementById("speedSlider").value));
       const accelEnabled = document.getElementById("autoAccel").checked;
       const accelLimit = parseFloat(document.getElementById("accelSlider").value);
-      let currentSpeed = speed;
-      let delay = 1000 / currentSpeed;
-      interval = setInterval(() => {
+
+      // Update current speed (apply acceleration if enabled)
+      if (accelEnabled && currentSpeed < accelLimit) {
+        currentSpeed = Math.min(currentSpeed + 0.02, accelLimit);
+      } else {
+        currentSpeed = baseSpeed;
+      }
+
+      // Calculate delay (ms per block)
+      const delay = 100 / (currentSpeed / wordCount);
+
+      // Schedule next update
+      timeoutId = setTimeout(() => {
         const blockStart = current * wordCount;
         if (blockStart < words.length) {
           current++;
           updateDisplay();
-          if (accelEnabled && currentSpeed < accelLimit) {
-            currentSpeed += 0.02;
-            delay = 1000 / currentSpeed;
-            clearInterval(interval);
-            startReading();
-          }
-        } else if (currentPageBatch * pagesPerBatch < totalPages || wordBuffer.length > 0) {
-          updateDisplay();
-        } else {
-          clearInterval(interval);
+          startReading(); // Continue reading
         }
       }, delay);
     }
 
+    // Pause/resume
     function togglePause() {
       isPaused = !isPaused;
       pauseButton.textContent = isPaused ? "Continue" : "Pause";
-      pauseButton.style.background = "#2ed3b7";
-      if (!isPaused) {
-        const blockStart = current * wordCount;
-        if (blockStart >= words.length) {
-          restartReading();
-        } else {
-          startReading();
-        }
+      if (!isPaused && current * wordCount < words.length) {
+        startReading();
       } else {
-        clearInterval(interval);
+        clearTimeout(timeoutId);
       }
     }
 
-    function restartReading() {
-      current = 0;
-      isPaused = false;
-      pauseButton.textContent = "Pause";
-      pauseButton.style.background = "#2ed3b7";
-      updateDisplay();
-      startReading();
+    // Start reading from a specific word
+    function startReadingFromWord(localIndex, pageNumber) {
+      // Convert local index to global index
+      const pageStartIndex = getPageStartIndex(pageNumber);
+      const globalIndex = pageStartIndex + localIndex;
+      if (globalIndex >= 0 && globalIndex < words.length) {
+        current = Math.floor(globalIndex / wordCount);
+        clearTimeout(timeoutId);
+        updateDisplay();
+        const clickedWord = fullTextDiv.querySelector(`span[data-global-index="${globalIndex}"]`);
+        if (clickedWord) {
+          clickedWord.classList.add("clicked");
+          setTimeout(() => clickedWord.classList.remove("clicked"), 200);
+        }
+        if (!isPaused) startReading();
+      }
     }
 
+    // Navigate to a percentage of progress
     function navigateToPercent(percent) {
       const totalBlocks = Math.floor(words.length / wordCount);
       current = Math.floor(totalBlocks * (percent / 100));
-      clearInterval(interval);
+      current = Math.min(current, totalBlocks);
+      clearTimeout(timeoutId);
       updateDisplay();
       if (!isPaused) startReading();
     }
 
-    function rewind(direction) {
-      const totalBlocks = Math.floor(words.length / wordCount);
-      const step = Math.floor(totalBlocks * 0.1);
-      current = direction === "back" ? Math.max(0, current - step) : Math.min(totalBlocks, current + step);
-      clearInterval(interval);
-      updateDisplay();
-      if (!isPaused) startReading();
-    }
-
-    async function loadNextBatch() {
-      if (!pdfDocument || currentPageBatch * pagesPerBatch >= totalPages || isLoadingBatch) {
-        console.log(`loadNextBatch skipped: currentPageBatch=${currentPageBatch}, totalPages=${totalPages}`);
+    // Navigate to a specific page
+    function navigateToPage(pageNumber) {
+      pageNumber = parseInt(pageNumber);
+      if (!pdfDocument || pageNumber < 1 || pageNumber > totalPages) {
         return;
       }
-      isLoadingBatch = true;
-      loadingIndicator.style.display = "block";
-      const startPage = currentPageBatch * pagesPerBatch + 1;
-      const endPage = Math.min(startPage + pagesPerBatch - 1, totalPages);
-      let batchText = "";
-      try {
-        console.log(`Loading pages ${startPage}-${endPage} of ${totalPages}`);
-        loadingIndicator.textContent = `Loading pages ${startPage}-${endPage} of ${totalPages} (${Math.round((endPage / totalPages) * 100)}%)...`;
-        for (let i = startPage; i <= endPage; i++) {
-          try {
-            const page = await pdfDocument.getPage(i);
-            const content = await page.getTextContent();
-            const pageText = content.items.map((item) => item.str).join(" ");
-            if (pageText.trim()) {
-              batchText += pageText + " ";
-              console.log(`Page ${i}: ${pageText.slice(0, 50)}...`);
-            } else {
-              console.log(`Page ${i} is empty, skipping`);
-            }
-          } catch (pageError) {
-            console.error(`Error on page ${i}:`, pageError);
-            continue;
-          }
-        }
-        const newWords = batchText.trim().replace(/\s+/g, " ").split(" ");
-        if (newWords.length > 0) {
-          wordBuffer = wordBuffer.concat(newWords);
-          console.log(`Added ${newWords.length} words from pages ${startPage}-${endPage}. Buffer size: ${wordBuffer.length}`);
-          if (words.length < 1000) {
-            words = words.concat(wordBuffer.splice(0, wordBuffer.length));
-            console.log(`Moved ${newWords.length} words to words. Total: ${words.length}`);
-          }
-        }
-        currentPageBatch++;
-        if (currentPageBatch * pagesPerBatch >= totalPages) {
-          loadingIndicator.textContent = "All pages loaded!";
-          setTimeout(() => (loadingIndicator.style.display = "none"), 2000);
-        }
-      } catch (error) {
-        console.error(`Error loading pages ${startPage}-${endPage}:`, error);
-        loadingIndicator.textContent = `Error loading pages ${startPage}-${endPage}. Continuing...`;
-      } finally {
-        isLoadingBatch = false;
-        updateDisplay();
-      }
+
+      const pageStartIndex = getPageStartIndex(pageNumber);
+      current = Math.floor(pageStartIndex / wordCount);
+      clearTimeout(timeoutId);
+      updateDisplay();
+      if (!isPaused) startReading();
     }
 
+    // Handle uploaded file
     async function handleFile(file) {
       if (!file) {
         alert("Please select a file!");
         return;
       }
-      if (file.size > 100 * 1024 * 1024) {
-        alert("File is too large. Maximum size: 100 MB.");
+
+      const maxSizeMB = 50;
+      if (file.size > maxSizeMB * 1024 * 1024) {
+        alert(
+          `File is too large (${(file.size / (1024 * 1024)).toFixed(2)} MB). Maximum size: ${maxSizeMB} MB.`
+        );
         return;
       }
-      alert("Ensure you have the legal right to use this file.");
 
       const ext = file.name.split(".").pop().toLowerCase();
       let text = "";
+      pauseButton.disabled = false;
+      pauseButton.textContent = "Pause";
       pdfDocument = null;
-      currentPageBatch = 0;
       totalPages = 0;
       words = [];
-      wordBuffer = [];
       chapters = [];
+      pageWordIndices = [];
       chapterSelect.style.display = "none";
       chapterSelect.innerHTML = "";
+      pageSelect.style.display = "none";
+      pageSelect.innerHTML = "";
       loadingIndicator.style.display = "none";
+      navigationSlider.value = 0;
 
       try {
         if (ext === "txt") {
           text = await file.text();
+          if (!text) throw new Error("The .txt file is empty or unreadable.");
         } else if (ext === "html") {
-          text = (await file.text()).replace(/<[^>]+>/g, "");
+          const html = await file.text();
+          const div = document.createElement("div");
+          div.innerHTML = html;
+          text = div.innerText;
+          if (!text.trim()) throw new Error("The .html file contains no text.");
         } else if (ext === "pdf") {
-          if (!pdfjsLib) throw new Error("pdf.js not loaded.");
+          if (!pdfjsLib) throw new Error("The pdf.js library is not loaded.");
           const arrayBuffer = await file.arrayBuffer();
           pdfDocument = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
           totalPages = pdfDocument.numPages;
-          const endPage = Math.min(pagesPerBatch, totalPages);
+          if (totalPages === 0) throw new Error("The PDF file is empty.");
+
+          let emptyPages = 0;
           loadingIndicator.style.display = "block";
-          loadingIndicator.textContent = `Loading pages 1-${endPage} of ${totalPages}...`;
-          let pdfText = "";
-          for (let i = 1; i <= endPage; i++) {
-            try {
-              const page = await pdfDocument.getPage(i);
-              const content = await page.getTextContent();
-              const pageText = content.items.map((item) => item.str).join(" ");
-              pdfText += pageText + " ";
-              console.log(`Page ${i}: ${pageText.slice(0, 50)}...`);
-            } catch (pageError) {
-              console.error(`Error on page ${i}:`, pageError);
+          loadingIndicator.textContent = `Loading all pages (1-${totalPages})...`;
+
+          for (let i = 1; i <= totalPages; i++) {
+            const page = await pdfDocument.getPage(i);
+            const content = await page.getTextContent();
+            const pageText = content.items.map((item) => item.str).join(" ");
+            const pageWords = pageText.trim().replace(/\s+/g, " ").split(" ").filter(word => word);
+            if (pageWords.length === 0) {
+              emptyPages++;
             }
+            pageWordIndices.push({ page: i, startIndex: words.length, wordCount: pageWords.length });
+            words = words.concat(pageWords);
           }
-          text = pdfText;
-          currentPageBatch = 1;
+          if (emptyPages === totalPages) {
+            alert("The PDF contains no extractable text. Try another file.");
+            words = [...welcomeWords];
+            loadingIndicator.style.display = "none";
+            updatePageSelect();
+            return;
+          }
+          loadingIndicator.style.display = "none";
+          updatePageSelect();
         } else if (ext === "docx") {
+          if (typeof mammoth === "undefined") throw new Error("The mammoth.js library is not loaded.");
           const arrayBuffer = await file.arrayBuffer();
-          text = (await mammoth.extractRawText({ arrayBuffer })).value;
+          const result = await mammoth.extractRawText({ arrayBuffer });
+          text = result.value;
+          if (!text.trim()) throw new Error("The .docx file is empty or text could not be extracted.");
         } else if (ext === "epub") {
+          if (typeof ePub === "undefined") throw new Error("The epub.js library is not loaded.");
           const arrayBuffer = await file.arrayBuffer();
           const book = ePub(arrayBuffer);
           const contents = await book.opened;
+
+          const toc = await book.loaded.navigation;
+          let wordIndex = 0;
+          chapters = [];
+          for (let item of toc.toc) {
+            chapters.push({ label: item.label, href: item.href, startIndex: wordIndex });
+            const doc = await book.load(item.href);
+            const chapterText = (doc.body.innerText || "") + " ";
+            const chapterWords = chapterText.trim().replace(/\s+/g, " ").split(" ");
+            wordIndex += chapterWords.length;
+          }
+          if (chapters.length > 0) {
+            chapterSelect.style.display = "block";
+            chapters.forEach((chapter, idx) => {
+              const option = document.createElement("option");
+              option.value = idx;
+              option.textContent = chapter.label || `Chapter ${idx + 1}`;
+              chapterSelect.appendChild(option);
+            });
+          }
+
           let epubText = "";
           for (let spineItem of contents.spine.items) {
             const doc = await book.load(spineItem.href);
             epubText += (doc.body.innerText || "") + " ";
           }
           text = epubText;
+          if (!text.trim()) throw new Error("The .epub file is empty or text could not be extracted.");
         } else if (ext === "rtf") {
+          if (typeof RTFJS === "undefined") throw new Error("The rtf.js library is not loaded.");
           const arrayBuffer = await file.arrayBuffer();
           const rtfContent = new TextDecoder().decode(arrayBuffer);
-          text = new RTFJS.Document(rtfContent).getText();
+          const rtf = new RTFJS.Document(rtfContent);
+          text = rtf.getText();
+          if (!text.trim()) throw new Error("The .rtf file is empty or text could not be extracted.");
         } else {
-          alert("Unsupported format. Supported: .txt, .pdf, .docx, .html, .epub, .rtf.");
+          alert(
+            "This format is not supported! Supported formats: .txt, .pdf, .docx, .html, .epub, .rtf."
+          );
           return;
         }
 
-        words = text.trim().replace(/\s+/g, " ").split(" ");
-        if (words.length === 0) {
-          alert("No words found in the file.");
-          words = welcomeMessage.trim().replace(/\s+/g, " ").split(" ");
+        if (ext !== "pdf") {
+          words = text.trim().replace(/\s+/g, " ").split(" ");
         }
-        current = 0;
+        if (words.length === 0) {
+          alert("No words found after processing the file. Try another file.");
+          words = [...welcomeWords];
+          updatePageSelect();
+          return;
+        }
+
+        navigationSlider.max = 100;
+        navigationSlider.value = 0;
+
+        current = parseInt(localStorage.getItem("readProgress")) || 0;
         isPaused = false;
         updateDisplay();
         startReading();
       } catch (error) {
-        console.error("Error processing file:", error);
-        alert("Failed to load file: " + error.message);
-        words = welcomeMessage.trim().replace(/\s+/g, " ").split(" ");
+        alert(
+          `Failed to load file (${ext}): ${error.message}. Check the browser console (F12) for details.`
+        );
+        loadingIndicator.style.display = "none";
+        words = [...welcomeWords];
+        updatePageSelect();
         updateDisplay();
         startReading();
       }
     }
 
+    // Event listeners
     document.getElementById("fileInput").addEventListener("change", (e) => {
       updateFileInputText();
-      handleFile(e.target.files[0]);
+      const file = e.target.files[0];
+      handleFile(file);
     });
 
-    document.getElementById("speedSlider").addEventListener("input", startReading);
+    document.getElementById("speedSlider").addEventListener("input", (e) => {
+      currentSpeed = calculateSpeed(parseFloat(e.target.value));
+      if (!isPaused) startReading();
+    });
+
     document.getElementById("sizeSlider").addEventListener("input", (e) => {
       wordBox.style.fontSize = `${e.target.value}rem`;
     });
+
     document.getElementById("wordCountSlider").addEventListener("input", (e) => {
-      wordCount = parseInt(e.target.value);
-      current = Math.floor((current * wordCount) / wordCount);
+      wordCount = Math.max(1, parseInt(e.target.value));
+      const currentIndex = current * wordCount;
+      current = Math.floor(currentIndex / wordCount);
       updateDisplay();
       if (!isPaused) startReading();
     });
 
     pauseButton.addEventListener("click", togglePause);
-    restartButton.addEventListener("click", restartReading);
-    rewindBack.addEventListener("click", () => rewind("back"));
-    rewindForward.addEventListener("click", () => rewind("forward"));
-    navigationSlider.addEventListener("input", (e) => navigateToPercent(parseInt(e.target.value)));
+
+    navigationSlider.addEventListener("input", (e) => {
+      const percent = parseInt(e.target.value);
+      navigateToPercent(percent);
+    });
+
+    chapterSelect.addEventListener("change", (e) => {
+      const chapterIdx = parseInt(e.target.value);
+      const chapter = chapters[chapterIdx];
+      if (chapter) {
+        const totalBlocks = Math.floor(words.length / wordCount);
+        const blockIndex = Math.floor(chapter.startIndex / wordCount);
+        current = blockIndex;
+        clearTimeout(timeoutId);
+        updateDisplay();
+        if (!isPaused) startReading();
+      }
+    });
+
+    pageSelect.addEventListener("change", (e) => {
+      const pageNumber = parseInt(e.target.value);
+      navigateToPage(pageNumber);
+    });
 
     fullTextDiv.addEventListener("click", (e) => {
       if (e.target.tagName === "SPAN") {
-        const index = parseInt(e.target.getAttribute("data-index"));
-        if (!isNaN(index)) {
-          current = Math.floor(index / wordCount);
-          updateDisplay();
-          if (!isPaused) startReading();
+        const localIndex = parseInt(e.target.getAttribute("data-index"));
+        const globalIndex = parseInt(e.target.getAttribute("data-global-index"));
+        const currentPage = getCurrentPage(current * wordCount);
+        if (!isNaN(localIndex) && !isNaN(globalIndex)) {
+          startReadingFromWord(localIndex, currentPage);
         }
       }
     });
 
-    function showModal(modalId) {
-      const modal = document.getElementById(modalId);
-      modal.classList.add("show");
-      modal.style.display = "flex";
-    }
-
-    function closeModal(modalId) {
-      const modal = document.getElementById(modalId);
-      modal.classList.remove("show");
-      modal.style.display = "none";
-      if (modalId === "welcomeModal" && document.getElementById("dontShowAgain").checked) {
-        localStorage.setItem("hideWelcomeModal", "true");
-      }
-    }
-
-    function acceptTerms() {
-      localStorage.setItem("termsAccepted", "true");
-      document.body.classList.remove("locked");
-      closeModal("termsModal");
-      if (!localStorage.getItem("hideWelcomeModal")) showModal("welcomeModal");
-    }
-
-    function declineTerms() {
-      alert("You must accept the Terms of Use to continue.");
-    }
-
-    function clearCache() {
-      localStorage.clear();
-      closeModal("privacyModal");
-      window.location.reload();
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("acceptTermsButton").addEventListener("click", acceptTerms);
-      document.getElementById("declineTermsButton").addEventListener("click", declineTerms);
-      document.getElementById("clearCacheButton").addEventListener("click", clearCache);
-      if (!localStorage.getItem("termsAccepted")) {
-        document.body.classList.add("locked");
-        showModal("termsModal");
-      } else if (!localStorage.getItem("hideWelcomeModal")) {
-        showModal("welcomeModal");
-      }
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        ["termsModal", "welcomeModal", "aboutModal", "privacyModal"].forEach(closeModal);
-      }
-    });
-
+    // Initialize file input text and start reading welcome message
     updateFileInputText();
+    updatePageSelect();
     updateDisplay();
     startReading();
   </script>
