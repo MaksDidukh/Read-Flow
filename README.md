@@ -5,12 +5,17 @@ A web application for reading text files (.txt, .pdf, .docx, .html, .epub, .rtf)
 - Local file processing (no server uploads).
 - Adjustable reading speed and word count.
 - Chapter navigation for EPUB files.
-- Hosted on Netlify.
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
+
+##For the developer
+BE CAREFUL!!!
+-The script works with libraries
+-May violate privacy rules and its policies
+
 ## Contact
 Maksym Didukh
 Email: didukh.maxim@gmail.com
-GitHub: https://github.com/MaksDidukh
+GitHub: https://github.com/MaksimDidukh
