@@ -16,6 +16,9 @@ BE CAREFUL!!!
 -May violate privacy rules and its policies
 
 ## Contact
+No patent or copyright.
 Maksym Didukh
 Email: didukh.maxim@gmail.com
 GitHub: https://github.com/MaksimDidukh
+
+I hope this project brought the world a satisfying and selfless feeling from reading your favorite books.
