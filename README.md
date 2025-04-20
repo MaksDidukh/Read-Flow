@@ -6,10 +6,6 @@ A web application for reading text files (.txt, .pdf, .docx, .html, .epub, .rtf)
 - Adjustable reading speed and word count.
 - Chapter navigation for EPUB files.
 
-## License
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-
 ## For developers 
 BE CAREFUL!!! 
 - The script works with libraries
