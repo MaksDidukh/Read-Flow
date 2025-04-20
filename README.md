@@ -1,4 +1,4 @@
-# ReadFlowBlocks
+# Read Flow Blocks
 A web application for reading text files (.txt, .pdf, .docx, .html, .epub, .rtf) with customizable speed and navigation.
 
 ## Features
