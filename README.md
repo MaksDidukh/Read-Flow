@@ -13,7 +13,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## For developers 
 BE CAREFUL!!! 
 - The script works with libraries
-- May violate privacy rules and its policies
+- May violate privacy rules and its policies(when used by the user)
+- Users can download pirated content (this is not tracked)
 
 ## Contact
 No patent or copyright.
