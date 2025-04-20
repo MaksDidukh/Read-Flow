@@ -11,9 +11,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 
 ##For the developer
-BE CAREFUL!!!
--The script works with libraries
--May violate privacy rules and its policies
+BE CAREFUL!!! 
+- The script works with libraries
+- May violate privacy rules and its policies
 
 ## Contact
 No patent or copyright.
