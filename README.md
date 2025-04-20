@@ -10,7 +10,7 @@ A web application for reading text files (.txt, .pdf, .docx, .html, .epub, .rtf)
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 
-##For the developer
+## For developers 
 BE CAREFUL!!! 
 - The script works with libraries
 - May violate privacy rules and its policies
