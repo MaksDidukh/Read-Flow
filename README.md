@@ -6,7 +6,7 @@ A web application for reading text files (.txt, .pdf, .docx, .html, .epub, .rtf)
 - Adjustable reading speed and word count.
 - Chapter navigation for EPUB files.
 
-## For developers 
+## For developers and users 
 BE CAREFUL!!! 
 - The script works with remote libraries
 - May violate privacy rules and its policies(when used by the user)
