@@ -8,7 +8,7 @@ A web application for reading text files (.txt, .pdf, .docx, .html, .epub, .rtf)
 
 ## For developers 
 BE CAREFUL!!! 
-- The script works with libraries
+- The script works with remote libraries
 - May violate privacy rules and its policies(when used by the user)
 - Users can download pirated content (this is not tracked)
 
