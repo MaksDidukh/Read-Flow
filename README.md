@@ -1,5 +1,7 @@
 # ReadFlowBlocks
 
+⚠️𝗧𝗼 𝗿𝗲𝗺𝗼𝘃𝗲 𝗺𝘆 𝗳𝘂𝗹𝗹 𝗶𝗻𝘁𝗲𝗹𝗹𝗲𝗰𝘁𝘂𝗮𝗹 𝗽𝗿𝗼𝗽𝗲𝗿𝘁𝘆 𝗿𝗶𝗴𝗵𝘁𝘀, 𝘆𝗼𝘂 𝗰𝗮𝗻 𝗮𝘀𝗸 𝗳𝗼𝗿 𝗮 𝗰𝗵𝗮𝘁 𝗚𝗣𝗧 𝘄𝗿𝗶𝘁𝗲 𝘁𝗵𝗲 𝘀𝗮𝗺𝗲 𝗰𝗼𝗱𝗲 𝗯𝘆 𝗰𝗼𝗽𝘆𝗶𝗻𝗴 𝗶𝘁 𝗮𝘀 𝗮 𝘁𝗲𝗺𝗽𝗹𝗮𝘁𝗲 𝗳𝗼𝗿 𝗻𝗲𝘄 𝘄𝗿𝗶𝘁𝗶𝗻𝗴. 𝗢𝗿 𝗶𝘁 𝗺𝗮𝘆 𝘀𝘂𝗴𝗴𝗲𝘀𝘁 𝗻𝗲𝘄 𝗶𝗱𝗲𝗮𝘀 𝗳𝗼𝗿 𝗮𝗱𝗱𝗶𝘁𝗶𝗼𝗻𝘀.⚠️𝗪𝗵𝘆 𝗿𝗲𝗮𝗱 𝗯𝗲𝗹𝗼𝘄⚠️.𝗧𝗵𝗮𝗻𝗸 𝘆𝗼𝘂.🙂
+
 **ReadFlowBlocks** is an open-source web application for reading text files (.txt, .pdf, .docx, .html, .epub, .rtf) with customizable reading speed, word count, and navigation. It is designed to make reading engaging and accessible.
 
 > **⚠️ Important**: This application processes files locally in your browser and does not upload data to any server. However, it uses external libraries that may transmit metadata (e.g., IP addresses) to third-party CDNs. See [Privacy Policy](#privacy-policy) for details.
